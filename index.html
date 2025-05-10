@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HN Game - Studio Game Việt</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    header {
+      background: #1e293b;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    header h1 {
+      font-size: 2.8em;
+      margin: 0;
+      color: #60a5fa;
+    }
+    header p {
+      margin-top: 10px;
+      font-size: 1.2em;
+      color: #cbd5e1;
+    }
+
+    .section {
+      padding: 40px 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .game-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .game-card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      width: 260px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .game-card:hover {
+      transform: scale(1.05);
+    }
+
+    .game-card img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .game-card h3 {
+      margin: 15px 0 10px;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 10px;
+      background: #3b82f6;
+      color: white;
+      padding: 10px 18px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .button:hover {
+      background: #2563eb;
+    }
+
+    footer {
+      background: #1e293b;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.95em;
+      color: #94a3b8;
+    }
+
+    a {
+      color: #93c5fd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>HN Game</h1>
+    <p>Chúng tôi tạo ra những tựa game độc đáo và hấp dẫn cho người Việt</p>
+  </header>
+
+  <div class="section">
+    <h2 style="text-align:center;">🎮 Game nổi bật</h2>
+    <div class="game-list">
+      <div class="game-card">
+        <img src="image/caancacabavuong.png" alt="Cá Bá Vương">
+        <h3>Cá Bá Vương</h3>
+        <a class="button" href="https://play.google.com/store/apps/details?id=com.hngame.fishhero" target="_blank">Tải game</a>
+      </div>
+
+      <div class="game-card">
+        <img src="thosanbienca.jpg" alt="Thợ Săn Biển Cả">
+        <h3>Thợ Săn Biển Cả</h3>
+        <a class="button" href="https://play.google.com/store/apps/details?id=com.hngame.thosanbienca" target="_blank">Tải game</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 style="text-align:center;">📱 Liên hệ</h2>
+    <p>Email: <a href="mailto:hngame.studio@gmail.com">hngame.studio@gmail.com</a></p>
+    <p>Facebook: <a href="https://facebook.com/hngame" target="_blank">facebook.com/hngame</a></p>
+  </div>
+
+  <footer>
+    &copy; 2025 HN Game. All rights reserved.
+  </footer>
+
+</body>
+</html>
