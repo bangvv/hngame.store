@@ -2,137 +2,290 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HN Game - Studio Game Việt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HN Game - Game Việt Online</title>
+  <meta name="description" content="HN Game - Nơi tổng hợp các trò chơi online miễn phí hay nhất: game chiến thuật, hành động, trí tuệ và nhiều thể loại hấp dẫn khác dành cho người Việt.">
+  <meta name="keywords" content="game online, game việt, game hành động, game chiến thuật, game trí tuệ, trò chơi miễn phí">
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: #0f172a;
       color: #f8fafc;
     }
+
+    /* Header menu */
     header {
       background: #1e293b;
+      padding: 20px 0;
       text-align: center;
-      padding: 40px 20px;
     }
     header h1 {
-      font-size: 2.8em;
       margin: 0;
+      font-size: 2em;
       color: #60a5fa;
     }
-    header p {
-      margin-top: 10px;
-      font-size: 1.2em;
-      color: #cbd5e1;
+    nav {
+      background: #1e293b;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 15px;
+      border-top: 1px solid #334155;
+    }
+    nav a {
+      color: #f8fafc;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+    nav a:hover {
+      background: #3b82f6;
     }
 
-    .section {
-      padding: 40px 20px;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .game-list {
+    /* Layout chính */
+    main {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 30px;
-      margin-top: 30px;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
     }
 
-    .game-card {
+    .content {
+      flex: 1 1 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .sidebar {
+      flex: 0 0 300px;
       background: #1e293b;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 20px;
-      width: 260px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      height: fit-content;
+    }
+
+    .section {
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .section h2 {
+      color: #60a5fa;
+      margin-top: 0;
+    }
+
+    /* Danh sách game */
+    .game-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: flex-start;
+    }
+	
+    .game-card {
+      background: #0f172a;
+      border-radius: 10px;
+      width: 200px;
       text-align: center;
+      padding: 15px;
       transition: transform 0.2s ease;
     }
-
     .game-card:hover {
       transform: scale(1.05);
     }
-
     .game-card img {
       width: 100%;
-      border-radius: 10px;
+      border-radius: 8px;
     }
-
-    .game-card h3 {
-      margin: 15px 0 10px;
-    }
-
+	.game-card h3 {
+	  margin: 15px 0 10px;
+	  font-size: 1.1em;
+	  color: #f1f5f9;
+	  line-height: 1.3em;
+	  height: 2.6em; /* 2 dòng × 1.3em */
+	  display: -webkit-box;
+	  -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
+	  -webkit-box-orient: vertical;
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	}
     .button {
       display: inline-block;
-      margin-top: 10px;
       background: #3b82f6;
-      color: white;
-      padding: 10px 18px;
-      text-decoration: none;
+      color: #fff;
+      padding: 6px 12px;
       border-radius: 6px;
-      font-weight: bold;
-      transition: background 0.3s;
+      text-decoration: none;
+      font-size: 0.9em;
     }
-
     .button:hover {
       background: #2563eb;
     }
 
+    /* Phân trang */
+    .pagination {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .pagination button {
+      background: #334155;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      margin: 3px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .pagination button:hover {
+      background: #3b82f6;
+    }
+
+	.top-game a {
+	  display: flex;
+	  align-items: center;
+	  gap: 10px;
+	  color: #93c5fd;
+	  text-decoration: none;
+	  margin: 8px 0;
+	  font-weight: 500;
+	}
+
+	.top-game a:hover {
+	  text-decoration: underline;
+	}
+
+	.top-game .game-icon {
+	  width: 40px;
+	  height: 40px;
+	  border-radius: 8px;
+	  object-fit: cover;
+	  flex-shrink: 0;
+	  border: 1px solid #334155;
+	}
+
+    /* Sidebar */
+    .sidebar h3 {
+      color: #facc15;
+      margin-top: 0;
+    }
+    .top-game {
+      margin-top: 10px;
+    }
+
     footer {
-      background: #1e293b;
       text-align: center;
       padding: 20px;
-      font-size: 0.95em;
+      background: #1e293b;
       color: #94a3b8;
+      font-size: 0.9em;
     }
 
-    a {
-      color: #93c5fd;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
+    @media (max-width: 900px) {
+      main { flex-direction: column; }
+      .sidebar { width: 100%; }
     }
   </style>
 </head>
 <body>
-
   <header>
     <h1>HN Game</h1>
-    <p>Chúng tôi tạo ra những tựa game độc đáo và hấp dẫn cho người Việt</p>
+    <p>Kho game Việt chất lượng - chơi miễn phí, giải trí mỗi ngày</p>
   </header>
 
-  <div class="section">
-    <h2 style="text-align:center;">🎮 Game nổi bật</h2>
-    <div class="game-list">
-      <div class="game-card">
-        <img src="image/caancacabavuong.png" alt="Cá Bá Vương">
-        <h3>Cá Ăn Cá: Cá Bá Vương</h3>
-        <a class="button" href="https://play.google.com/store/apps/details?id=com.hngame.fishhero" target="_blank">Tải game</a>
-      </div>
+  <nav>
+    <a href="#">Trang chủ</a>
+    <a href="#">Game chiến thuật</a>
+    <a href="#">Game hành động</a>
+    <a href="#">Game trí tuệ</a>
+    <a href="#">Game thể thao</a>
+    <a href="#">Liên hệ</a>
+  </nav>
 
-      <div class="game-card">
-        <img src="image/trochoitinhnhanh.png" alt="Trò chơi tính nhanh">
-        <h3>Trò chơi tính nhanh</h3>
-        <a class="button" href="https://play.google.com/store/apps/details?id=com.hngame.trochoitinhnhanh" target="_blank">Tải game</a>
-      </div>
+  <main>
+    <div class="content">
+      <section class="section">
+        <h2>🎮 Danh sách game mới</h2>
+        <div class="game-list">
+          <div class="game-card">
+            <img src="image/caancacabavuong.png" alt="Cá Ăn Cá: Cá Bá Vương">
+            <h3>Cá Ăn Cá: Cá Bá Vương</h3>
+            <a href="https://play.google.com/store/apps/details?id=com.hngame.fishhero" target="_blank" class="button">Chơi ngay</a>
+          </div>
+          <div class="game-card">
+            <img src="image/trochoitinhnhanh.png" alt="Trò chơi tính nhanh">
+            <h3>Trò chơi tính nhanh</h3>
+            <a href="https://play.google.com/store/apps/details?id=com.hngame.trochoitinhnhanh" target="_blank" class="button">Chơi ngay</a>
+          </div>
+        </div>
+        <div class="pagination">
+          <button>1</button>
+          <button>2</button>
+          <button>...</button>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>📋 Danh sách tất cả game</h2>
+        <div class="game-list">
+          <div class="game-card">
+            <img src="image/caancacabavuong.png" alt="Cá Ăn Cá: Cá Bá Vương">
+            <h3>Cá Ăn Cá: Cá Bá Vương</h3>
+            <a href="https://play.google.com/store/apps/details?id=com.hngame.fishhero" target="_blank" class="button">Chơi ngay</a>
+          </div>
+          <div class="game-card">
+            <img src="image/trochoitinhnhanh.png" alt="Trò chơi tính nhanh">
+            <h3>Trò chơi tính nhanh</h3>
+            <a href="https://play.google.com/store/apps/details?id=com.hngame.trochoitinhnhanh" target="_blank" class="button">Chơi ngay</a>
+          </div>
+        </div>
+        <div class="pagination">
+          <button>1</button>
+          <button>2</button>
+          <button>...</button>
+        </div>
+      </section>
     </div>
-  </div>
 
-  <div class="section">
-    <h2 style="text-align:center;">📱 Liên hệ</h2>
-    <p>Email: <a href="barry060695@gmail.com">barry060695@gmail.com</a></p>
-  </div>
+	<aside class="sidebar">
+	  <h3>🔥 Top game trong tháng</h3>
+	  <div class="top-game">
+		<a href="#">
+		  <img src="image/caancacabavuong.png" alt="Cá Ăn Cá: Cá Bá Vương" class="game-icon">
+		  <span>1. Cá Ăn Cá: Cá Bá Vương</span>
+		</a>
+		<a href="#">
+		  <img src="image/trochoitinhnhanh.png" alt="Trò chơi tính nhanh" class="game-icon">
+		  <span>2. Trò chơi tính nhanh</span>
+		</a>
+		<a href="#">
+		  <img src="image/chienbinhrong.png" alt="Chiến binh rồng" class="game-icon">
+		  <span>3. Chiến binh rồng</span>
+		</a>
+		<a href="#">
+		  <img src="image/ninjavuotnguc.png" alt="Ninja vượt ngục" class="game-icon">
+		  <span>4. Ninja vượt ngục</span>
+		</a>
+		<a href="#">
+		  <img src="image/duaxetocdo.png" alt="Đua xe tốc độ" class="game-icon">
+		  <span>5. Đua xe tốc độ</span>
+		</a>
+	  </div>
+	</aside>
+
+  </main>
 
   <footer>
-    &copy; 2025 HN Game. All rights reserved.
+    &copy; 2025 HN Game. Tất cả bản quyền được bảo lưu.
   </footer>
-
 </body>
 </html>
