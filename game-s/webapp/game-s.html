@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cá Ăn Cá: Cá Bá Vương - HN Game</title>
+  <meta name="description" content="Chơi game Cá Ăn Cá: Cá Bá Vương - nhập vai cá bá vương trong đại dương, săn mồi và trở thành vua biển cả!">
+  <meta name="keywords" content="Cá Ăn Cá, game cá ăn cá, game vui, game hành động, HN Game">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+      background: #1e293b;
+      color: #fff;
+    }
+
+    nav {
+      background: #334155;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 10px 0;
+    }
+
+    nav a {
+      color: #f8fafc;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      background: #60a5fa;
+      color: #fff;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .section {
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section h2 {
+      color: #60a5fa;
+      margin-top: 0;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    canvas#canvas {
+      width: 800px;
+      height: 800px;
+      border: 2px solid #334155;
+      border-radius: 10px;
+      background: #000;
+    }
+
+    #progress {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #progress-box {
+      width: 300px;
+      height: 20px;
+      background: #334155;
+      border-radius: 10px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #60a5fa;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1200px) {
+      canvas#canvas {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body oncontextmenu="return false" onload="start()">
+  <header>
+    <h1>HN Game</h1>
+    <p>Kho game Việt chất lượng - chơi miễn phí, giải trí mỗi ngày</p>
+  </header>
+
+  <nav>
+    <a href="index.html">Trang chủ</a>
+    <a href="#">Game chiến thuật</a>
+    <a href="#">Game hành động</a>
+    <a href="#">Game trí tuệ</a>
+    <a href="#">Game thể thao</a>
+    <a href="#">Liên hệ</a>
+  </nav>
+
+  <main>
+    <!-- Phần 1: Giới thiệu -->
+    <section class="section">
+      <h2>🎮 Giới thiệu game</h2>
+      <p>
+        <strong>Cá Ăn Cá: Cá Bá Vương</strong> là trò chơi sinh tồn dưới đại dương.
+        Bạn điều khiển chú cá nhỏ, ăn những con cá bé hơn để lớn mạnh và tránh bị săn bởi cá lớn.
+      </p>
+    </section>
+
+    <!-- Phần 2: Nhúng game -->
+    <section class="game-container">
+      <h2>🕹️ Chơi ngay</h2>
+      <div id="progress">
+        <img id="progress-img" src="startup-logo.png" alt="Loading..." style="max-width:150px;">
+        <div id="progress-box">
+          <div id="progress-bar"></div>
+        </div>
+      </div>
+      <canvas id="canvas" width="800" height="800"></canvas>
+    </section>
+
+    <!-- Phần 3: Hướng dẫn -->
+    <section class="section">
+      <h2>📜 Hướng dẫn chơi</h2>
+      <ul>
+        <li>Dùng chuột hoặc phím mũi tên để điều khiển cá di chuyển.</li>
+        <li>Ăn những con cá nhỏ hơn để lớn lên.</li>
+        <li>Tránh xa những con cá lớn hơn bạn nếu không muốn bị nuốt!</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 HN Game. Tất cả bản quyền được bảo lưu.
+  </footer>
+
+  <!-- Script khởi chạy game TeaVM -->
+  <script>
+    async function start() {
+      main(); // hàm `main()` được TeaVM build ra trong app.js
+    }
+
+    var maxPercentage = 25;
+    var delay = 500;
+    var bar = document.getElementById("progress-bar");
+    if (bar) {
+      var barStyle = bar.style;
+      barStyle.width = "0%";
+      function barUpdater() {
+        var percentage = parseInt(barStyle.width, 10);
+        if (percentage < maxPercentage) {
+          percentage++;
+          barStyle.width = percentage + "%";
+          delay += 25;
+          setTimeout(barUpdater, delay);
+        }
+      }
+      setTimeout(barUpdater, delay);
+    }
+  </script>
+
+  <!-- Nạp code game -->
+  <script type="text/javascript" charset="utf-8" src="teavm/app.js"></script>
+</body>
+</html>
