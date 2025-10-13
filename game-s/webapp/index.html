@@ -146,17 +146,11 @@
 
     <!-- Phần 2: Nhúng game -->
     <section class="game-container">
-      <h2>Chơi ngay</h2>
-      <div id="progress">
-        <img id="progress-img" src="startup-logo.png" alt="Loading..." style="max-width:150px;">
-        <div id="progress-box">
-          <div id="progress-bar"></div>
-        </div>
-      </div>
       <canvas id="canvas" width="1080" height="1920"></canvas>
     </section>
 
-    <!-- Phần 3: Hướng dẫn -->
+	<div style="height: 30px;"></div>
+	
     <section class="section">
       <h2>📜 Hướng dẫn chơi</h2>
       <ul>
@@ -171,32 +165,12 @@
     &copy; 2025 HN Game. Tất cả bản quyền được bảo lưu.
   </footer>
 
-  <!-- Script khởi chạy game TeaVM -->
   <script>
     async function start() {
-      main(); // hàm `main()` được TeaVM build ra trong app.js
-    }
-
-    var maxPercentage = 25;
-    var delay = 500;
-    var bar = document.getElementById("progress-bar");
-    if (bar) {
-      var barStyle = bar.style;
-      barStyle.width = "0%";
-      function barUpdater() {
-        var percentage = parseInt(barStyle.width, 10);
-        if (percentage < maxPercentage) {
-          percentage++;
-          barStyle.width = percentage + "%";
-          delay += 25;
-          setTimeout(barUpdater, delay);
-        }
-      }
-      setTimeout(barUpdater, delay);
+      main();
     }
   </script>
 
-  <!-- Nạp code game -->
   <script type="text/javascript" charset="utf-8" src="teavm/app.js"></script>
 </body>
 </html>
