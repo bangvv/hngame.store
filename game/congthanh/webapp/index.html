@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>HN Game - Công Thành Chiến</title>
 
-<meta name="description" content="Game chienthuat Công Thành Chiến cực hay">
-<meta name="keywords" content="game Công Thành Chiến, chienthuat, game Việt, HN Game, miễn phí, game online, web game">
-<meta property="og:title" content="Game chienthuat Công Thành Chiến - HN Game">
+<meta name="description" content="Game chiến thuật Công Thành Chiến cực hay">
+<meta name="keywords" content="game Công Thành Chiến, chiến thuật, game Việt, HN Game, miễn phí, game online, web game">
+<meta property="og:title" content="Game chiến thuật Công Thành Chiến - HN Game">
 <meta property="og:description" content="Chơi game Công Thành Chiến hoàn toàn miễn phí, vui nhộn và hấp dẫn.">
-<meta property="og:image" content="../images/congthanh.png">
+<meta property="og:image" content="../image/congthanh.png">
 <meta property="og:url" content="www.hngame.store/game/congthanh/webapp">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Game chienthuat Công Thành Chiến">
+<meta name="twitter:title" content="Game chiến thuật Công Thành Chiến">
 <meta name="twitter:description" content="Chơi game Công Thành Chiến hoàn toàn miễn phí, vui nhộn và hấp dẫn.">
-<meta name="twitter:image" content="../images/congthanh.png">
+<meta name="twitter:image" content="../image/congthanh.png">
 
 <style>
   body { background:#0f172a; color:#e2e8f0; font-family:'Arial',sans-serif; margin:0; padding:0; }
@@ -77,25 +77,89 @@
   &copy; 2025 HN Game. Tất cả bản quyền được bảo lưu.
 </footer>
 
-<script>
-async function start() { main(); }
-</script>
+<script type="text/javascript" charset="utf-8" src="teavm/app.js"></script>
 
 <script>
+// ====== Bắt đầu game từ TeaVM ======
+async function start() {
+  if (typeof main === "function") main(); // main() từ TeaVM
+}
+window.addEventListener("load", start);
+
+// ====== Xử lý fullscreen + touch fix ======
 const canvas = document.getElementById("canvas");
 const fullBtn = document.getElementById("fullscreen-btn");
 
+// --- Hàm resize canvas ---
+function resizeCanvas() {
+  if (document.fullscreenElement) {
+    // Khi vào fullscreen
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+  } else {
+    // Khi thoát fullscreen
+    canvas.width = 1080;
+    canvas.height = 1920;
+    canvas.style.width = "486px";
+    canvas.style.height = "864px";
+  }
+
+  // Gửi thông báo cho game (TeaVM)
+  if (typeof gameResize === "function") gameResize(canvas.width, canvas.height);
+}
+
+// --- Nút fullscreen ---
 fullBtn.addEventListener("click", () => {
-  if(canvas.requestFullscreen) canvas.requestFullscreen();
-  else if(canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
-  else if(canvas.msRequestFullscreen) canvas.msRequestFullscreen();
+  if (canvas.requestFullscreen) canvas.requestFullscreen();
+  else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
+  else if (canvas.msRequestFullscreen) canvas.msRequestFullscreen();
 });
 
-document.addEventListener("fullscreenchange", () => {
-  if(!document.fullscreenElement){canvas.style.width="486px";canvas.style.height="864px";}
+// --- Khi thay đổi fullscreen / kích thước ---
+document.addEventListener("fullscreenchange", resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
+
+// --- Chuyển đổi tọa độ touch/mouse ---
+function getCanvasCoords(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  let x, y;
+  if (evt.touches && evt.touches.length > 0) {
+    x = (evt.touches[0].clientX - rect.left) * scaleX;
+    y = (evt.touches[0].clientY - rect.top) * scaleY;
+  } else {
+    x = (evt.clientX - rect.left) * scaleX;
+    y = (evt.clientY - rect.top) * scaleY;
+  }
+  return {x, y};
+}
+
+// --- Touch + Mouse event forwarding ---
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  const p = getCanvasCoords(e);
+  if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
+});
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const p = getCanvasCoords(e);
+  if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
+});
+canvas.addEventListener("touchend", e => {
+  e.preventDefault();
+  if (typeof gameTouchEnd === "function") gameTouchEnd();
+});
+canvas.addEventListener("mousedown", e => {
+  const p = getCanvasCoords(e);
+  if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
+});
+canvas.addEventListener("mouseup", e => {
+  if (typeof gameTouchEnd === "function") gameTouchEnd();
 });
 </script>
 
-<script type="text/javascript" charset="utf-8" src="teavm/app.js"></script>
 </body>
 </html>
