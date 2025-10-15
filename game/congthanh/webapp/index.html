@@ -30,25 +30,12 @@
   footer{text-align:center;padding:20px;background:#1e293b;color:#94a3b8;font-size:14px;}
   .fullscreen-button{margin-top:10px;padding:10px 20px;background:#3b82f6;border:none;border-radius:8px;color:white;font-size:16px;cursor:pointer;transition:background 0.2s;}
   .fullscreen-button:hover{background:#2563eb;}
-  canvas#canvas {
-    width: 486px;
-    height: 864px;
-    border: 2px solid #334155;
-    border-radius: 10px;
-    background: #000;
-    display: block;
-    margin: 0 auto;
-  }
+  canvas#canvas {display: block;margin: 0 auto;background: #000;border: 2px solid #334155;border-radius: 10px;width: 486px;height: 864px;max-width: 100%;height: auto;aspect-ratio: 9 / 16;}
 
-  /* Dành cho mobile */
+  /* Mobile */
   @media (max-width: 768px) {
-    canvas#canvas {
-      width: 90vw;                /* Chiếm 90% chiều rộng màn hình */
-      height: calc(90vw * 16 / 9); /* Tự tính chiều cao theo tỉ lệ 9:16 */
-      border: 2px solid #334155;
-      border-radius: 10px;
-      background: #000;
-    }
+    .game-container {width: 100%;display: flex;justify-content: center;}
+    canvas#canvas {width: 90vw; /* lấy 90% chiều rộng màn hình */height: calc(90vw * 16 / 9); /* chiều cao dựa theo tỉ lệ */max-height: 90vh; /* không vượt quá chiều cao màn hình */object-fit: contain;}
   }
 
 </style>
