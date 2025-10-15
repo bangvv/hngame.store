@@ -185,26 +185,44 @@ function isMobile() {
 
 // 🎯 Hàm resize chính xác cho mọi chế độ
 function resizeCanvas() {
-const full = !!document.fullscreenElement;
+  const full = !!document.fullscreenElement;
   const mobile = isMobile();
 
   if (full) {
     // ===== Khi fullscreen =====
     if (mobile) {
-      // 📱 Mobile: dùng 100vw và 100vh để fullscreen, giữ đúng tỉ lệ 9:16
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
+      // 📱 Mobile: dùng visualViewport để tránh lỗi chiều cao ảo
+      const vw = window.innerWidth;
+      const vh = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+
+      canvas.style.position = "fixed";
+      canvas.style.top = "0";
+      canvas.style.left = "0";
+      canvas.style.width = vw + "px";
+      canvas.style.height = vh + "px";
+      canvas.style.maxWidth = "none";
+      canvas.style.maxHeight = "none";
     } else {
-      // 🖥️ Desktop: fullscreen thật
+      // 🖥️ Desktop fullscreen
+      canvas.style.position = "fixed";
+      canvas.style.top = "0";
+      canvas.style.left = "0";
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
     }
   } else {
     // ===== Khi thoát fullscreen =====
+    canvas.style.position = "relative";
+    canvas.style.top = "";
+    canvas.style.left = "";
     if (mobile) {
-      // 📱 Mobile trở về kích thước trong CSS
+      // 📱 Mobile trở về kích thước CSS 90%
       canvas.style.width = "90%";
-      canvas.style.height = "auto"; // chiều cao tự điều chỉnh theo aspect-ratio trong CSS
+      canvas.style.height = "auto"; // chiều cao tự co theo aspect-ratio trong CSS
+      canvas.style.maxWidth = "";
+      canvas.style.maxHeight = "";
     } else {
       // 🖥️ Desktop mặc định
       canvas.style.width = "486px";
@@ -212,8 +230,9 @@ const full = !!document.fullscreenElement;
     }
   }
 
-  // ⚠️ Không đổi canvas.width/height thật — TeaVM cần giữ 1080x1920
+  // ⚠️ KHÔNG đổi canvas.width/height thật (TeaVM cần 1080x1920)
 }
+
 
 // 🎮 Bắt đầu game (TeaVM)
 async function start() {
