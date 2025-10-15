@@ -124,6 +124,7 @@ function generateHTML(game) {
     <canvas id="canvas" width=${canvasWidth} height=${canvasHeight}></canvas>
     <div style="height:10px;"></div>
     <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
+    <div style="height:10px;"></div>
   </section>
 
   <div style="height:30px;"></div>
