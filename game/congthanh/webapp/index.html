@@ -178,56 +178,60 @@ function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
 
+  const LOGICAL_RATIO = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+
   if (full) {
     // ===== Khi fullscreen =====
-    const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-    const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
-    // Giữ đúng tỉ lệ gốc 9:16
-    const gameRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
     const screenRatio = vw / vh;
     let displayW, displayH;
 
-    if (screenRatio > gameRatio) {
+    if (screenRatio > LOGICAL_RATIO) {
       displayH = vh;
-      displayW = vh * gameRatio;
+      displayW = vh * LOGICAL_RATIO;
     } else {
       displayW = vw;
-      displayH = vw / gameRatio;
+      displayH = vw / LOGICAL_RATIO;
     }
 
-    canvas.style.position = "fixed";
-    canvas.style.left = `${(vw - displayW) / 2}px`;
-    canvas.style.top = `${(vh - displayH) / 2}px`;
+    // ✅ Dùng transform để căn giữa tuyệt đối — tránh lỗi chạm sai trên desktop
+    canvas.style.position = "absolute";
+    canvas.style.left = "50%";
+    canvas.style.top = "50%";
+    canvas.style.transform = "translate(-50%, -50%)";
     canvas.style.width = `${displayW}px`;
     canvas.style.height = `${displayH}px`;
 
-    // ✅ Trong fullscreen, tắt cuộn hoàn toàn
+    // ✅ Tắt cuộn hoàn toàn trong fullscreen
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
-
   } else {
     // ===== Khi thoát fullscreen =====
     canvas.style.position = "relative";
     canvas.style.left = "";
     canvas.style.top = "";
+    canvas.style.transform = "";
 
     if (mobile) {
-      // ✅ Dùng vw để bám theo màn hình, không bị tràn
+      // 📱 Mobile — bám theo CSS (chiếm 90% container, tự căn giữa)
       canvas.style.width = "90%";
-      canvas.style.height = "calc(90% * 16 / 9)";
+      canvas.style.height = "auto";
     } else {
+      // 🖥️ Desktop — kích thước mặc định
       canvas.style.width = "486px";
       canvas.style.height = "864px";
     }
 
-    // ✅ Cho phép cuộn dọc trở lại, vẫn chặn cuộn ngang
+    // ✅ Cho phép cuộn dọc, nhưng chặn cuộn ngang
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
   }
 }
+
 
 
 // === Tính tọa độ chính xác ===
