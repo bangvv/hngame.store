@@ -73,44 +73,48 @@ main {
   margin-top: 0;
 }
 
-/* ✅ Game container căn giữa */
+/* 🎯 Container chính căn giữa tuyệt đối */
 .game-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* căn giữa theo chiều ngang */
-  justify-content: center; /* căn giữa theo chiều dọc nếu có khoảng trống */
+  align-items: center;     /* căn giữa ngang */
+  justify-content: center; /* căn giữa dọc */
   background: #1e293b;
   border-radius: 12px;
   padding: 20px;
-  margin: 0 auto;
   text-align: center;
 }
 
-/* ✅ Canvas giữ tỉ lệ 9:16 */
+/* 🖥️ Canvas mặc định (desktop) */
 canvas#canvas {
   display: block;
-  margin: 0 auto;
   background: #000;
   border: 2px solid #334155;
   border-radius: 10px;
-  width: min(90vw, 486px); /* co giãn hợp lý cả trên mobile */
-  aspect-ratio: 9 / 16;    /* luôn giữ tỉ lệ 9:16 */
-  height: auto;
-  max-height: 90vh;        /* không vượt quá chiều cao màn hình */
+  width: 486px;
+  height: 864px;
+  margin: 0 auto;
 }
 
-/* ✅ Khi fullscreen: canvas chiếm toàn bộ màn hình */
-canvas#canvas:fullscreen,
-canvas#canvas:-webkit-full-screen,
-canvas#canvas:-moz-full-screen {
-  width: 100vw !important;
-  height: 100vh !important;
-  aspect-ratio: auto !important;
-  border: none !important;
-  border-radius: 0 !important;
+/* 📱 Mobile giữ đúng tỉ lệ 9:16 và căn giữa */
+@media (max-width: 768px) {
+  .game-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  canvas#canvas {
+    width: 90vw;                      /* 90% chiều ngang */
+    height: calc(90vw * 16 / 9);      /* giữ tỉ lệ 9:16 */
+    max-height: 90vh;                 /* không vượt quá màn hình */
+    background: #000;
+    border: 2px solid #334155;
+    border-radius: 10px;
+    object-fit: contain;
+  }
 }
 
-/* ✅ Nút full màn hình */
+/* 🖥️ Nút fullscreen căn giữa */
 .fullscreen-button {
   margin-top: 15px;
   padding: 10px 20px;
@@ -134,7 +138,6 @@ footer {
   color: #94a3b8;
   font-size: 14px;
 }
-
 
 </style>
 </head>
