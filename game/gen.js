@@ -6,12 +6,28 @@ const games = JSON.parse(fs.readFileSync('game.json', 'utf-8'));
 
 // Hàm tạo HTML cho từng game
 function generateHTML(game) {
-  const { title, category, thumbnail, url, introduce, instruct } = game;
+  const { title, category, thumbnail, url, introduce, instruct,layout } = game;
 
   // Lấy phần đường dẫn sau ".store/game/" để làm thư mục
   const urlPath = url.split('.store/game/')[1]; // ví dụ: quyenvuong/webapp
   const outputDir = path.join(__dirname, urlPath);
-
+  const canvasStyle = layout === "doc"
+  ? `canvas#canvas {
+      width: 90%;
+      height: calc(90% * 16 / 9);
+      border: 2px solid #334155;
+      border-radius: 10px;
+      background: #000;
+    }`
+  : `canvas#canvas {
+      width: 90%;
+      height: calc(90% * 9 / 16);
+      border: 2px solid #334155;
+      border-radius: 10px;
+      background: #000;
+    }`;
+  const [canvasWidth, canvasHeight] =
+    layout === "doc" ? [1080, 1920] : [1920, 1080];
   // Tạo thư mục nếu chưa có
   fs.mkdirSync(outputDir, { recursive: true });
 
@@ -37,20 +53,28 @@ function generateHTML(game) {
 <meta name="twitter:image" content="${thumbnail}">
 
 <style>
-  body { background:#0f172a; color:#e2e8f0; font-family:'Arial',sans-serif; margin:0; padding:0; }
-  header{text-align:center;padding:20px;background:#1e293b;color:#fff;}
-  nav{background:#334155;display:flex;justify-content:center;flex-wrap:wrap;gap:15px;padding:10px 0;}
-  nav a{color:#f8fafc;text-decoration:none;padding:8px 14px;border-radius:6px;transition:0.3s;}
-  nav a:hover{background:#60a5fa;color:#fff;}
-  main{max-width:1200px;margin:20px auto;padding:0 15px;}
-  .section{background:#1e293b;border-radius:10px;padding:20px;margin-bottom:20px;}
-  .section h2{color:#60a5fa;margin-top:0;}
-  .game-container{display:flex;flex-direction:column;align-items:center;background:#1e293b;border-radius:12px;padding:20px;}
-  canvas#canvas{width:486px;height:864px;border:2px solid #334155;border-radius:10px;background:#000;}
-  footer{text-align:center;padding:20px;background:#1e293b;color:#94a3b8;font-size:14px;}
-  @media(max-width:1200px){canvas#canvas{width:100%;height:auto;}}
-  .fullscreen-button{margin-top:10px;padding:10px 20px;background:#3b82f6;border:none;border-radius:8px;color:white;font-size:16px;cursor:pointer;transition:background 0.2s;}
-  .fullscreen-button:hover{background:#2563eb;}
+  html, body {background: #0f172a;color: #e2e8f0;font-family: 'Arial', sans-serif;margin: 0;padding: 0;}
+  header {text-align: center;padding: 20px;background: #1e293b;color: #fff;}
+  nav {background: #334155;display: flex;justify-content: center;flex-wrap: wrap;gap: 15px;padding: 10px 0;}
+  nav a {color: #f8fafc;text-decoration: none;padding: 8px 14px;border-radius: 6px;transition: 0.3s;}
+  nav a:hover {background: #60a5fa;color: #fff;}
+  main {max-width: 1200px;margin: 20px auto;padding: 0 15px;justify-content: center;}
+  .fullscreen-button {padding: 10px 20px;margin-top: 8px;font-size: 16px;border: none;border-radius: 8px;cursor: pointer;background: #444;color: #fff;}
+  .fullscreen-button:hover {background: #666;}
+  .section {background: #1e293b;border-radius: 10px;padding: 20px;margin-bottom: 20px;}
+  .section h2 {color: #60a5fa;margin-top: 0;}
+  .game-container {display: flex;flex-direction: column;justify-content: center;background: #1e293b;border-radius: 12px;text-align: center;}
+  canvas#canvas {display: block;background: #000;border: 2px solid #334155;border-radius: 10px;
+    width: 486px;
+    height: 864px;
+    margin: 0 auto;
+  }
+  @media (max-width: 768px) { 
+    .game-container {width: 100%;display: flex;flex-direction: column;align-items: center;justify-content: center;}
+    ${canvasStyle};
+  }
+  footer {text-align: center;padding: 20px;background: #1e293b;color: #94a3b8;font-size: 14px;}
+  * {box-sizing: border-box;max-width: 100vw;}
 </style>
 </head>
 
@@ -76,7 +100,8 @@ function generateHTML(game) {
   </section>
 
   <section class="game-container">
-    <canvas id="canvas" width="1080" height="1920"></canvas>
+  <div style="height:20px;"></div>
+    <canvas id="canvas" width=${canvasWidth} height=${canvasHeight}></canvas>
     <div style="height:10px;"></div>
     <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
   </section>
@@ -95,26 +120,132 @@ function generateHTML(game) {
   &copy; 2025 HN Game. Tất cả bản quyền được bảo lưu.
 </footer>
 
-<script>
-async function start() { main(); }
-</script>
+<script type="text/javascript" charset="utf-8" src="teavm/app.js"></script>
 
 <script>
 const canvas = document.getElementById("canvas");
 const fullBtn = document.getElementById("fullscreen-btn");
+const LOGICAL_WIDTH = ${layout === "doc" ? 1080 : 1920};
+const LOGICAL_HEIGHT = ${layout === "doc" ? 1920 : 1080};
 
-fullBtn.addEventListener("click", () => {
-  if(canvas.requestFullscreen) canvas.requestFullscreen();
-  else if(canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
-  else if(canvas.msRequestFullscreen) canvas.msRequestFullscreen();
+function isMobile() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+}
+
+// === Resize canvas hiển thị ===
+function resizeCanvas() {
+  const full = !!document.fullscreenElement;
+  const mobile = isMobile();
+
+  if (full) {
+    if (isMobile()) {
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
+    } else {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vw";
+    }
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+  } else {
+    canvas.width = LOGICAL_WIDTH;
+    canvas.height = LOGICAL_HEIGHT;
+    ${layout === "doc"
+      ? `
+        if (mobile) {
+          canvas.style.width = "90%";
+          canvas.style.height = "calc(90% * 16 / 9)";
+        } else {
+          canvas.style.width = "486px";
+          canvas.style.height = "864px";
+        }`
+      : `
+        if (mobile) {
+          canvas.style.width = "90%";
+          canvas.style.height = "calc(90% * 9 / 16)";
+        } else {
+          canvas.style.width = "864px";
+          canvas.style.height = "486px";
+        }`
+    }
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+    document.documentElement.style.overflowY = "auto";
+    document.body.style.overflowY = "auto";
+  }
+}
+
+
+function getCanvasCoords(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = LOGICAL_WIDTH / rect.width;
+  const scaleY = LOGICAL_HEIGHT / rect.height;
+
+  let clientX, clientY;
+  if (evt.touches && evt.touches.length > 0) {
+    clientX = evt.touches[0].clientX;
+    clientY = evt.touches[0].clientY;
+  } else {
+    clientX = evt.clientX;
+    clientY = evt.clientY;
+  }
+
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY,
+  };
+}
+
+["mousedown", "touchstart"].forEach(ev =>
+  canvas.addEventListener(ev, e => {
+    e.preventDefault();
+    resizeCanvas();
+    const p = getCanvasCoords(e);
+    if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
+  })
+);
+["mouseup", "touchend"].forEach(ev =>
+  canvas.addEventListener(ev, e => {
+    e.preventDefault();
+    if (typeof gameTouchEnd === "function") gameTouchEnd();
+  })
+);
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const p = getCanvasCoords(e);
+  if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
 });
+
+// === Fullscreen toggle ===
+fullBtn.addEventListener("click", async () => {
+  try {
+    if (canvas.requestFullscreen) await canvas.requestFullscreen();
+    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
+    setTimeout(resizeCanvas, 200);
+  } catch (e) {
+    console.error("Fullscreen error:", e);
+  }
+});
+
+// === Event thay đổi kích thước / xoay / fullscreen ===
+["resize", "orientationchange", "fullscreenchange"].forEach(ev =>
+  window.addEventListener(ev, () => setTimeout(resizeCanvas, 200))
+);
 
 document.addEventListener("fullscreenchange", () => {
-  if(!document.fullscreenElement){canvas.style.width="486px";canvas.style.height="864px";}
+  setTimeout(resizeCanvas, 200);
 });
+// === Khởi động TeaVM game ===
+function start() {
+  resizeCanvas();
+  if (typeof main === "function") main();
+}
+window.addEventListener("load", start);
 </script>
 
-<script type="text/javascript" charset="utf-8" src="teavm/app.js"></script>
 </body>
 </html>`;
 
