@@ -183,95 +183,83 @@ function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 }
 
-// 🎯 Hàm resize chính xác cho mọi chế độ
+// ⚙️ Không thay đổi kích thước logic thật của canvas (TeaVM cần giữ nguyên)
+const LOGICAL_WIDTH = canvas.width;
+const LOGICAL_HEIGHT = canvas.height;
+
+// 🧩 Tự động scale hiển thị khi thay đổi fullscreen hoặc xoay màn hình
 function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
 
-  if (full) {
-    // ===== Khi fullscreen =====
-    if (mobile) {
-      // 📱 Mobile: dùng visualViewport để tránh lỗi chiều cao ảo
-      const vw = window.innerWidth;
-      const vh = window.visualViewport
-        ? window.visualViewport.height
-        : window.innerHeight;
+  // Xóa mọi override cũ
+  canvas.style.position = "";
+  canvas.style.left = "";
+  canvas.style.top = "";
+  canvas.style.transform = "";
+  canvas.style.transformOrigin = "";
 
-      canvas.style.position = "fixed";
-      canvas.style.top = "0";
-      canvas.style.left = "0";
-      canvas.style.width = vw + "px";
-      canvas.style.height = vh + "px";
-      canvas.style.maxWidth = "none";
-      canvas.style.maxHeight = "none";
+  if (full) {
+    // ==== FULLSCREEN MODE ====
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+
+    // Giữ đúng tỉ lệ 9:16 (theo logic canvas)
+    const gameRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+    const screenRatio = screenW / screenH;
+
+    let displayW, displayH;
+    if (screenRatio > gameRatio) {
+      // màn hình rộng hơn tỉ lệ game
+      displayH = screenH;
+      displayW = displayH * gameRatio;
     } else {
-      // 🖥️ Desktop fullscreen
-      canvas.style.position = "fixed";
-      canvas.style.top = "0";
-      canvas.style.left = "0";
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
+      displayW = screenW;
+      displayH = displayW / gameRatio;
     }
+
+    // Căn giữa canvas
+    canvas.style.position = "fixed";
+    canvas.style.width = displayW + "px";
+    canvas.style.height = displayH + "px";
+    canvas.style.left = (screenW - displayW) / 2 + "px";
+    canvas.style.top = (screenH - displayH) / 2 + "px";
   } else {
-    // ===== Khi thoát fullscreen =====
-    canvas.style.position = "relative";
-    canvas.style.top = "";
-    canvas.style.left = "";
+    // ==== NORMAL MODE ====
     if (mobile) {
-      // 📱 Mobile trở về kích thước CSS 90%
       canvas.style.width = "90%";
-      canvas.style.height = "auto"; // chiều cao tự co theo aspect-ratio trong CSS
-      canvas.style.maxWidth = "";
-      canvas.style.maxHeight = "";
+      canvas.style.height = "auto";
     } else {
-      // 🖥️ Desktop mặc định
       canvas.style.width = "486px";
       canvas.style.height = "864px";
     }
+    canvas.style.margin = "0 auto";
+    canvas.style.display = "block";
   }
-
-  // ⚠️ KHÔNG đổi canvas.width/height thật (TeaVM cần 1080x1920)
 }
 
-
-// 🎮 Bắt đầu game (TeaVM)
-async function start() {
-  if (typeof main === "function") main();
-}
-window.addEventListener("load", start);
-
-// 🖥️ Nút fullscreen
-fullBtn.addEventListener("click", async () => {
-  try {
-    if (canvas.requestFullscreen) await canvas.requestFullscreen();
-    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
-    else if (canvas.msRequestFullscreen) await canvas.msRequestFullscreen();
-  } catch (e) {
-    console.error("Fullscreen error:", e);
-  }
-});
-
-// 🔄 Cập nhật khi fullscreen / resize / xoay
-document.addEventListener("fullscreenchange", () => setTimeout(resizeCanvas, 200));
-window.addEventListener("resize", () => setTimeout(resizeCanvas, 200));
-window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 400));
-
-// 🧭 Xử lý touch và mouse
+// 🎯 Mapping tọa độ chính xác (bất kể canvas đang scale bao nhiêu)
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  let x, y;
+  const scaleX = LOGICAL_WIDTH / rect.width;
+  const scaleY = LOGICAL_HEIGHT / rect.height;
+  let clientX, clientY;
+
   if (evt.touches && evt.touches.length > 0) {
-    x = (evt.touches[0].clientX - rect.left) * scaleX;
-    y = (evt.touches[0].clientY - rect.top) * scaleY;
+    clientX = evt.touches[0].clientX;
+    clientY = evt.touches[0].clientY;
   } else {
-    x = (evt.clientX - rect.left) * scaleX;
-    y = (evt.clientY - rect.top) * scaleY;
+    clientX = evt.clientX;
+    clientY = evt.clientY;
   }
-  return { x, y };
+
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY,
+  };
 }
 
+// 🎮 Touch & Mouse events
 canvas.addEventListener("touchstart", e => {
   e.preventDefault();
   const p = getCanvasCoords(e);
@@ -293,8 +281,30 @@ canvas.addEventListener("mousedown", e => {
 canvas.addEventListener("mouseup", e => {
   if (typeof gameTouchEnd === "function") gameTouchEnd();
 });
-</script>
 
+// 🖥️ Fullscreen button
+fullBtn.addEventListener("click", async () => {
+  try {
+    if (canvas.requestFullscreen) await canvas.requestFullscreen();
+    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
+    else if (canvas.msRequestFullscreen) await canvas.msRequestFullscreen();
+  } catch (e) {
+    console.error("Fullscreen error:", e);
+  }
+});
+
+// 🔄 Cập nhật khi fullscreen / resize / xoay màn hình
+document.addEventListener("fullscreenchange", resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", resizeCanvas);
+
+// 🚀 Khởi động game (TeaVM)
+function start() {
+  resizeCanvas();
+  if (typeof main === "function") main();
+}
+window.addEventListener("load", start);
+</script>
 
 
 </body>
