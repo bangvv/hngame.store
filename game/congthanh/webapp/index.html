@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="../image/congthanh.png">
 
 <style>
-body {
+html, body {
   background: #0f172a;
   color: #e2e8f0;
   font-family: 'Arial', sans-serif;
@@ -59,6 +59,7 @@ main {
   max-width: 1200px;
   margin: 20px auto;
   padding: 0 15px;
+  justify-content: center;
 }
 
 .section {
@@ -77,8 +78,7 @@ main {
 .game-container {
   display: flex;
   flex-direction: column;
-  /* align-items: center;     /* căn giữa ngang */
-  justify-content: center; /* căn giữa dọc */
+  justify-content: center;
   background: #1e293b;
   border-radius: 12px;
   text-align: center;
@@ -99,7 +99,7 @@ canvas#canvas {
 /* Mobile */ 
 @media (max-width: 768px) { 
   .game-container {width: 100%;display: flex;flex-direction: column;align-items: center;justify-content: center;} 
-  canvas#canvas {width: 90%; height: calc(90vw * 16 / 9);border: 2px solid #334155;border-radius: 10px;background: #000;} 
+  canvas#canvas {width: 90%; height: calc(90% * 16 / 9);border: 2px solid #334155;border-radius: 10px;background: #000;} 
 }
 
 footer {
@@ -108,6 +108,11 @@ footer {
   background: #1e293b;
   color: #94a3b8;
   font-size: 14px;
+}
+
+* {
+  box-sizing: border-box; /* tránh phần tử tính sai chiều rộng */
+  max-width: 100vw;       /* không bao giờ rộng hơn chiều rộng viewport */
 }
 
 </style>
@@ -159,107 +164,141 @@ footer {
 <script type="text/javascript" charset="utf-8" src="teavm/app.js"></script>
 
 <script>
-// ====== Khởi động game TeaVM ======
-async function start() {
-  if (typeof main === "function") main(); // Hàm main() do TeaVM build
-}
-window.addEventListener("load", start);
-
-// ====== Xử lý fullscreen + touch ======
 const canvas = document.getElementById("canvas");
 const fullBtn = document.getElementById("fullscreen-btn");
+const LOGICAL_WIDTH = 1080;
+const LOGICAL_HEIGHT = 1920;
 
-// --- Hàm kiểm tra mobile ---
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 }
 
-// --- Resize canvas (desktop + mobile) ---
+// === Resize canvas hiển thị ===
 function resizeCanvas() {
-  if (document.fullscreenElement) {
-    // Nếu đang fullscreen
-    if (isMobile()) {
-      // Trên mobile chỉ scale bằng CSS, tránh resize canvas nội bộ
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
-    } else {
-      // Desktop: cập nhật kích thước thật
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
-    }
-  } else {
-    // Thoát fullscreen → trở về kích thước mặc định
-    canvas.width = 1080;
-    canvas.height = 1920;
-    canvas.style.width = "486px";
-    canvas.style.height = "864px";
-  }
+  const full = !!document.fullscreenElement;
+  const mobile = isMobile();
 
-  if (typeof gameResize === "function") {
-    gameResize(canvas.width, canvas.height);
+  if (full) {
+    // ===== Khi fullscreen =====
+    const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+    const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+    // Giữ đúng tỉ lệ gốc 9:16
+    const gameRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+    const screenRatio = vw / vh;
+    let displayW, displayH;
+
+    if (screenRatio > gameRatio) {
+      displayH = vh;
+      displayW = vh * gameRatio;
+    } else {
+      displayW = vw;
+      displayH = vw / gameRatio;
+    }
+
+    canvas.style.position = "fixed";
+    canvas.style.left = `${(vw - displayW) / 2}px`;
+    canvas.style.top = `${(vh - displayH) / 2}px`;
+    canvas.style.width = `${displayW}px`;
+    canvas.style.height = `${displayH}px`;
+
+    // ✅ Trong fullscreen, tắt cuộn hoàn toàn
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+  } else {
+    // ===== Khi thoát fullscreen =====
+    canvas.style.position = "relative";
+    canvas.style.left = "";
+    canvas.style.top = "";
+
+    if (mobile) {
+      // ✅ Dùng vw để bám theo màn hình, không bị tràn
+      canvas.style.width = "90%";
+      canvas.style.height = "calc(90% * 16 / 9)";
+    } else {
+      canvas.style.width = "486px";
+      canvas.style.height = "864px";
+    }
+
+    // ✅ Cho phép cuộn dọc trở lại, vẫn chặn cuộn ngang
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+    document.documentElement.style.overflowY = "auto";
+    document.body.style.overflowY = "auto";
   }
 }
 
-// --- Fullscreen button ---
-fullBtn.addEventListener("click", async () => {
-  try {
-    if (canvas.requestFullscreen) await canvas.requestFullscreen();
-    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
-    else if (canvas.msRequestFullscreen) await canvas.msRequestFullscreen();
 
-    // Đợi một chút cho trình duyệt ổn định layout (mobile cần)
-    setTimeout(resizeCanvas, 150);
-  } catch (e) {
-    console.error("Fullscreen error:", e);
-  }
-});
-
-// --- Khi thay đổi fullscreen hoặc orientation ---
-document.addEventListener("fullscreenchange", () => setTimeout(resizeCanvas, 150));
-window.addEventListener("resize", () => setTimeout(resizeCanvas, 150));
-window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 300));
-
-// --- Chuẩn hóa tọa độ touch/mouse ---
+// === Tính tọa độ chính xác ===
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  let x, y;
+
+  // scaleX, scaleY cập nhật mỗi lần dùng, không lưu cũ
+  const scaleX = LOGICAL_WIDTH / rect.width;
+  const scaleY = LOGICAL_HEIGHT / rect.height;
+
+  let clientX, clientY;
   if (evt.touches && evt.touches.length > 0) {
-    x = (evt.touches[0].clientX - rect.left) * scaleX;
-    y = (evt.touches[0].clientY - rect.top) * scaleY;
+    clientX = evt.touches[0].clientX;
+    clientY = evt.touches[0].clientY;
   } else {
-    x = (evt.clientX - rect.left) * scaleX;
-    y = (evt.clientY - rect.top) * scaleY;
+    clientX = evt.clientX;
+    clientY = evt.clientY;
   }
-  return { x, y };
+
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY,
+  };
 }
 
-// --- Bắt sự kiện touch và mouse ---
-canvas.addEventListener("touchstart", e => {
-  e.preventDefault();
-  const p = getCanvasCoords(e);
-  if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
-});
+// === Gán sự kiện tương tác ===
+["mousedown", "touchstart"].forEach(ev =>
+  canvas.addEventListener(ev, e => {
+    e.preventDefault();
+    resizeCanvas(); // 🔥 cập nhật boundingRect ngay tại thời điểm click
+    const p = getCanvasCoords(e);
+    if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
+  })
+);
+["mouseup", "touchend"].forEach(ev =>
+  canvas.addEventListener(ev, e => {
+    e.preventDefault();
+    if (typeof gameTouchEnd === "function") gameTouchEnd();
+  })
+);
 canvas.addEventListener("touchmove", e => {
   e.preventDefault();
   const p = getCanvasCoords(e);
   if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
 });
-canvas.addEventListener("touchend", e => {
-  e.preventDefault();
-  if (typeof gameTouchEnd === "function") gameTouchEnd();
+
+// === Fullscreen toggle ===
+fullBtn.addEventListener("click", async () => {
+  try {
+    if (canvas.requestFullscreen) await canvas.requestFullscreen();
+    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
+    setTimeout(resizeCanvas, 200);
+  } catch (e) {
+    console.error("Fullscreen error:", e);
+  }
 });
-canvas.addEventListener("mousedown", e => {
-  const p = getCanvasCoords(e);
-  if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
-});
-canvas.addEventListener("mouseup", e => {
-  if (typeof gameTouchEnd === "function") gameTouchEnd();
-});
+
+// === Event thay đổi kích thước / xoay / fullscreen ===
+["resize", "orientationchange", "fullscreenchange"].forEach(ev =>
+  window.addEventListener(ev, () => setTimeout(resizeCanvas, 200))
+);
+
+// === Khởi động TeaVM game ===
+function start() {
+  resizeCanvas();
+  if (typeof main === "function") main();
+}
+window.addEventListener("load", start);
 </script>
+
+
 
 </body>
 </html>
