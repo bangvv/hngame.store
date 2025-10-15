@@ -193,25 +193,22 @@ function isMobile() {
 
 // --- Resize canvas (desktop + mobile) ---
 function resizeCanvas() {
-  if (document.fullscreenElement) {
-    // Nếu đang fullscreen
-    if (isMobile()) {
-      // Trên mobile chỉ scale bằng CSS, tránh resize canvas nội bộ
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
-    } else {
-      // Desktop: cập nhật kích thước thật
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
-    }
+  const isFull = !!document.fullscreenElement;
+  const mobile = isMobile();
+
+  if (isFull) {
+    // Khi fullscreen, chỉ scale bằng CSS — KHÔNG thay đổi canvas.width/height
+    canvas.style.width = "100vw";
+    canvas.style.height = "100vh";
   } else {
-    // Thoát fullscreen → trở về kích thước mặc định
-    canvas.width = 1080;
-    canvas.height = 1920;
-    canvas.style.width = "486px";
-    canvas.style.height = "864px";
+    // Khi thoát fullscreen → trả lại kích thước CSS mặc định (9:16)
+    if (mobile) {
+      canvas.style.width = "90vw";
+      canvas.style.height = "calc(90vw * 16 / 9)";
+    } else {
+      canvas.style.width = "486px";
+      canvas.style.height = "864px";
+    }
   }
 
   if (typeof gameResize === "function") {
