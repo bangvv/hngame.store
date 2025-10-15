@@ -77,12 +77,13 @@ main {
 .game-container {
   display: flex;
   flex-direction: column;
-  align-items: center;     /* căn giữa ngang */
+  /* align-items: center;     /* căn giữa ngang */
   justify-content: center; /* căn giữa dọc */
   background: #1e293b;
   border-radius: 12px;
   padding: 20px;
   text-align: center;
+  width: 90vw;
 }
 
 /* 🖥️ Canvas mặc định (desktop) */
@@ -99,8 +100,8 @@ canvas#canvas {
 /* 📱 Mobile giữ đúng tỉ lệ 9:16 và căn giữa */
 /* Mobile */ 
 @media (max-width: 768px) { 
-  .game-container {width: 100%;display: flex;justify-content: center;} 
-  canvas#canvas {width: 90vw; height: calc(90vw * 16 / 9); max-height: 90vh;object-fit: contain;} }
+  .game-container {width: 100%;display: flex;align-items: center;justify-content: center;} 
+  canvas#canvas {width: 90%; height: calc(90vw * 16 / 9);border: 2px solid #334155;border-radius: 10px;background: #000;} }
 
 /* 🖥️ Nút fullscreen căn giữa */
 .fullscreen-button {
