@@ -18,25 +18,123 @@
 <meta name="twitter:image" content="../image/congthanh.png">
 
 <style>
-  body { background:#0f172a; color:#e2e8f0; font-family:'Arial',sans-serif; margin:0; padding:0; }
-  header{text-align:center;padding:20px;background:#1e293b;color:#fff;}
-  nav{background:#334155;display:flex;justify-content:center;flex-wrap:wrap;gap:15px;padding:10px 0;}
-  nav a{color:#f8fafc;text-decoration:none;padding:8px 14px;border-radius:6px;transition:0.3s;}
-  nav a:hover{background:#60a5fa;color:#fff;}
-  main{max-width:1200px;margin:20px auto;padding:0 15px;}
-  .section{background:#1e293b;border-radius:10px;padding:20px;margin-bottom:20px;}
-  .section h2{color:#60a5fa;margin-top:0;}
-  .game-container{display:flex;flex-direction:column;align-items:center;background:#1e293b;border-radius:12px;padding:20px;}
-  footer{text-align:center;padding:20px;background:#1e293b;color:#94a3b8;font-size:14px;}
-  .fullscreen-button{margin-top:10px;padding:10px 20px;background:#3b82f6;border:none;border-radius:8px;color:white;font-size:16px;cursor:pointer;transition:background 0.2s;}
-  .fullscreen-button:hover{background:#2563eb;}
-  canvas#canvas {display: block;margin: 0 auto;background: #000;border: 2px solid #334155;border-radius: 10px;width: 486px;height: 864px;max-width: 100%;height: auto;aspect-ratio: 9 / 16;}
+body {
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
-  /* Mobile */
-  @media (max-width: 768px) {
-    .game-container {width: 100%;display: flex;justify-content: center;}
-    canvas#canvas {width: 90vw; /* lấy 90% chiều rộng màn hình */height: calc(90vw * 16 / 9); /* chiều cao dựa theo tỉ lệ */max-height: 90vh; /* không vượt quá chiều cao màn hình */object-fit: contain;}
-  }
+header {
+  text-align: center;
+  padding: 20px;
+  background: #1e293b;
+  color: #fff;
+}
+
+nav {
+  background: #334155;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px 0;
+}
+
+nav a {
+  color: #f8fafc;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  background: #60a5fa;
+  color: #fff;
+}
+
+main {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+.section {
+  background: #1e293b;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.section h2 {
+  color: #60a5fa;
+  margin-top: 0;
+}
+
+/* ✅ Game container căn giữa */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* căn giữa theo chiều ngang */
+  justify-content: center; /* căn giữa theo chiều dọc nếu có khoảng trống */
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ✅ Canvas giữ tỉ lệ 9:16 */
+canvas#canvas {
+  display: block;
+  margin: 0 auto;
+  background: #000;
+  border: 2px solid #334155;
+  border-radius: 10px;
+  width: min(90vw, 486px); /* co giãn hợp lý cả trên mobile */
+  aspect-ratio: 9 / 16;    /* luôn giữ tỉ lệ 9:16 */
+  height: auto;
+  max-height: 90vh;        /* không vượt quá chiều cao màn hình */
+}
+
+/* ✅ Khi fullscreen: canvas chiếm toàn bộ màn hình */
+canvas#canvas:fullscreen,
+canvas#canvas:-webkit-full-screen,
+canvas#canvas:-moz-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+  aspect-ratio: auto !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* ✅ Nút full màn hình */
+.fullscreen-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.fullscreen-button:hover {
+  background: #2563eb;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background: #1e293b;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
 
 </style>
 </head>
