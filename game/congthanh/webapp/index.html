@@ -199,9 +199,9 @@ function resizeCanvas() {
 
   } else {
     // ===== Khi thoát fullscreen =====
-    const propsToRemove = ["position","left","top","transform","width","height","maxWidth","maxHeight","margin"];
-    propsToRemove.forEach(p => canvas.style.removeProperty(p.replace(/([A-Z])/g,"-$1").toLowerCase()));
 
+    canvas.width = 1080;
+    canvas.height = 1920;
     if (mobile) {
       // ✅ Dùng vw để bám theo màn hình, không bị tràn
       canvas.style.width = "90%";
