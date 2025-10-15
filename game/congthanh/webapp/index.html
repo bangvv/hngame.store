@@ -27,20 +27,30 @@
   .section{background:#1e293b;border-radius:10px;padding:20px;margin-bottom:20px;}
   .section h2{color:#60a5fa;margin-top:0;}
   .game-container{display:flex;flex-direction:column;align-items:center;background:#1e293b;border-radius:12px;padding:20px;}
-    canvas#canvas {
-    width: min(90vw, 486px);  /* Giới hạn: tối đa 486px hoặc 90% chiều ngang màn hình */
-    aspect-ratio: 9 / 16;     /* Giữ tỉ lệ 9:16 */
+  footer{text-align:center;padding:20px;background:#1e293b;color:#94a3b8;font-size:14px;}
+  .fullscreen-button{margin-top:10px;padding:10px 20px;background:#3b82f6;border:none;border-radius:8px;color:white;font-size:16px;cursor:pointer;transition:background 0.2s;}
+  .fullscreen-button:hover{background:#2563eb;}
+  canvas#canvas {
+    width: 486px;
+    height: 864px;
     border: 2px solid #334155;
     border-radius: 10px;
     background: #000;
     display: block;
-    height: auto; /* Để trình duyệt tự tính chiều cao */
-    max-height: 90vh; /* Không cao quá màn hình */
     margin: 0 auto;
   }
-  footer{text-align:center;padding:20px;background:#1e293b;color:#94a3b8;font-size:14px;}
-  .fullscreen-button{margin-top:10px;padding:10px 20px;background:#3b82f6;border:none;border-radius:8px;color:white;font-size:16px;cursor:pointer;transition:background 0.2s;}
-  .fullscreen-button:hover{background:#2563eb;}
+
+  /* Dành cho mobile */
+  @media (max-width: 768px) {
+    canvas#canvas {
+      width: 90vw;                /* Chiếm 90% chiều rộng màn hình */
+      height: calc(90vw * 16 / 9); /* Tự tính chiều cao theo tỉ lệ 9:16 */
+      border: 2px solid #334155;
+      border-radius: 10px;
+      background: #000;
+    }
+  }
+
 </style>
 </head>
 
