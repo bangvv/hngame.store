@@ -280,6 +280,9 @@ fullBtn.addEventListener("click", async () => {
   window.addEventListener(ev, () => setTimeout(resizeCanvas, 200))
 );
 
+document.addEventListener("fullscreenchange", () => {
+  setTimeout(resizeCanvas, 200);
+});
 // === Khởi động TeaVM game ===
 function start() {
   resizeCanvas();
