@@ -185,27 +185,28 @@ function isMobile() {
 
 // 🎯 Hàm resize chính xác cho mọi chế độ
 function resizeCanvas() {
-  const full = !!document.fullscreenElement;
+const full = !!document.fullscreenElement;
   const mobile = isMobile();
 
   if (full) {
-    // Khi fullscreen
+    // ===== Khi fullscreen =====
     if (mobile) {
-      // ✅ Mobile: set fullscreen dùng visualViewport để tránh thanh điều hướng
-      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = vh + "px";
+      // 📱 Mobile: dùng 100vw và 100vh để fullscreen, giữ đúng tỉ lệ 9:16
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
     } else {
-      // ✅ Desktop: full màn hình
+      // 🖥️ Desktop: fullscreen thật
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
     }
   } else {
-    // Khi thoát fullscreen → trả về CSS mặc định
+    // ===== Khi thoát fullscreen =====
     if (mobile) {
+      // 📱 Mobile trở về kích thước trong CSS
       canvas.style.width = "90%";
-      canvas.style.height = "calc(90% * 16 / 9)";
+      canvas.style.height = "auto"; // chiều cao tự điều chỉnh theo aspect-ratio trong CSS
     } else {
+      // 🖥️ Desktop mặc định
       canvas.style.width = "486px";
       canvas.style.height = "864px";
     }
