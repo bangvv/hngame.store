@@ -190,8 +190,8 @@ function resizeCanvas() {
       // Desktop: cập nhật kích thước thật
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vw";
     }
     // ✅ Trong fullscreen, tắt cuộn hoàn toàn
     document.documentElement.style.overflow = "hidden";
@@ -199,9 +199,8 @@ function resizeCanvas() {
 
   } else {
     // ===== Khi thoát fullscreen =====
-
-    canvas.width = 1080;
-    canvas.height = 1920;
+    canvas.width = LOGICAL_WIDTH;
+    canvas.height = LOGICAL_HEIGHT;
     if (mobile) {
       // ✅ Dùng vw để bám theo màn hình, không bị tràn
       canvas.style.width = "90%";
