@@ -159,125 +159,107 @@ footer {
 <script type="text/javascript" charset="utf-8" src="teavm/app.js"></script>
 
 <script>
+// ====== Khởi động game TeaVM ======
+async function start() {
+  if (typeof main === "function") main(); // Hàm main() do TeaVM build
+}
+window.addEventListener("load", start);
+
+// ====== Xử lý fullscreen + touch ======
 const canvas = document.getElementById("canvas");
 const fullBtn = document.getElementById("fullscreen-btn");
-const LOGICAL_WIDTH = 1080;
-const LOGICAL_HEIGHT = 1920;
 
+// --- Hàm kiểm tra mobile ---
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 }
 
-// === Resize canvas hiển thị ===
+// --- Resize canvas (desktop + mobile) ---
 function resizeCanvas() {
-  const full = !!document.fullscreenElement;
-  const mobile = isMobile();
-
-  if (full) {
-    const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-    const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-    // Giữ đúng tỉ lệ gốc 9:16
-    const gameRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
-    const screenRatio = vw / vh;
-    let displayW, displayH;
-
-    if (screenRatio > gameRatio) {
-      displayH = vh;
-      displayW = vh * gameRatio;
+  if (document.fullscreenElement) {
+    // Nếu đang fullscreen
+    if (isMobile()) {
+      // Trên mobile chỉ scale bằng CSS, tránh resize canvas nội bộ
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
     } else {
-      displayW = vw;
-      displayH = vw / gameRatio;
+      // Desktop: cập nhật kích thước thật
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
     }
-
-    canvas.style.position = "fixed";
-    canvas.style.left = (vw - displayW) / 2 + "px";
-    canvas.style.top = (vh - displayH) / 2 + "px";
-    canvas.style.width = displayW + "px";
-    canvas.style.height = displayH + "px";
   } else {
-    canvas.style.position = "relative";
-    canvas.style.left = "";
-    canvas.style.top = "";
-    if (mobile) {
-      canvas.style.width = "90%";
-      canvas.style.height = "auto";
-    } else {
-      canvas.style.width = "486px";
-      canvas.style.height = "864px";
-    }
+    // Thoát fullscreen → trở về kích thước mặc định
+    canvas.width = 1080;
+    canvas.height = 1920;
+    canvas.style.width = "486px";
+    canvas.style.height = "864px";
+  }
+
+  if (typeof gameResize === "function") {
+    gameResize(canvas.width, canvas.height);
   }
 }
 
-// === Tính tọa độ chính xác ===
-function getCanvasCoords(evt) {
-  const rect = canvas.getBoundingClientRect();
-
-  // scaleX, scaleY cập nhật mỗi lần dùng, không lưu cũ
-  const scaleX = LOGICAL_WIDTH / rect.width;
-  const scaleY = LOGICAL_HEIGHT / rect.height;
-
-  let clientX, clientY;
-  if (evt.touches && evt.touches.length > 0) {
-    clientX = evt.touches[0].clientX;
-    clientY = evt.touches[0].clientY;
-  } else {
-    clientX = evt.clientX;
-    clientY = evt.clientY;
-  }
-
-  return {
-    x: (clientX - rect.left) * scaleX,
-    y: (clientY - rect.top) * scaleY,
-  };
-}
-
-// === Gán sự kiện tương tác ===
-["mousedown", "touchstart"].forEach(ev =>
-  canvas.addEventListener(ev, e => {
-    e.preventDefault();
-    resizeCanvas(); // 🔥 cập nhật boundingRect ngay tại thời điểm click
-    const p = getCanvasCoords(e);
-    if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
-  })
-);
-["mouseup", "touchend"].forEach(ev =>
-  canvas.addEventListener(ev, e => {
-    e.preventDefault();
-    if (typeof gameTouchEnd === "function") gameTouchEnd();
-  })
-);
-canvas.addEventListener("touchmove", e => {
-  e.preventDefault();
-  const p = getCanvasCoords(e);
-  if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
-});
-
-// === Fullscreen toggle ===
+// --- Fullscreen button ---
 fullBtn.addEventListener("click", async () => {
   try {
     if (canvas.requestFullscreen) await canvas.requestFullscreen();
     else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
-    setTimeout(resizeCanvas, 200);
+    else if (canvas.msRequestFullscreen) await canvas.msRequestFullscreen();
+
+    // Đợi một chút cho trình duyệt ổn định layout (mobile cần)
+    setTimeout(resizeCanvas, 150);
   } catch (e) {
     console.error("Fullscreen error:", e);
   }
 });
 
-// === Event thay đổi kích thước / xoay / fullscreen ===
-["resize", "orientationchange", "fullscreenchange"].forEach(ev =>
-  window.addEventListener(ev, () => setTimeout(resizeCanvas, 200))
-);
+// --- Khi thay đổi fullscreen hoặc orientation ---
+document.addEventListener("fullscreenchange", () => setTimeout(resizeCanvas, 150));
+window.addEventListener("resize", () => setTimeout(resizeCanvas, 150));
+window.addEventListener("orientationchange", () => setTimeout(resizeCanvas, 300));
 
-// === Khởi động TeaVM game ===
-function start() {
-  resizeCanvas();
-  if (typeof main === "function") main();
+// --- Chuẩn hóa tọa độ touch/mouse ---
+function getCanvasCoords(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  let x, y;
+  if (evt.touches && evt.touches.length > 0) {
+    x = (evt.touches[0].clientX - rect.left) * scaleX;
+    y = (evt.touches[0].clientY - rect.top) * scaleY;
+  } else {
+    x = (evt.clientX - rect.left) * scaleX;
+    y = (evt.clientY - rect.top) * scaleY;
+  }
+  return { x, y };
 }
-window.addEventListener("load", start);
+
+// --- Bắt sự kiện touch và mouse ---
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  const p = getCanvasCoords(e);
+  if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
+});
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const p = getCanvasCoords(e);
+  if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
+});
+canvas.addEventListener("touchend", e => {
+  e.preventDefault();
+  if (typeof gameTouchEnd === "function") gameTouchEnd();
+});
+canvas.addEventListener("mousedown", e => {
+  const p = getCanvasCoords(e);
+  if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
+});
+canvas.addEventListener("mouseup", e => {
+  if (typeof gameTouchEnd === "function") gameTouchEnd();
+});
 </script>
-
-
 
 </body>
 </html>
