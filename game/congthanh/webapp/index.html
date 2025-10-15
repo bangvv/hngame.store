@@ -180,30 +180,18 @@ function resizeCanvas() {
 
   if (full) {
     // ===== Khi fullscreen =====
-    if (mobile && window.visualViewport) {
-      const vw = window.visualViewport.width;
-      const vh = window.visualViewport.height;
-      // use fixed so it overlays page cleanly
-      canvas.style.position = "fixed";
-      canvas.style.left = "0";
-      canvas.style.top = "0";
-      canvas.style.width = vw + "px";
-      canvas.style.height = vh + "px";
-      canvas.style.maxWidth = "none";
-      canvas.style.maxHeight = "none";
-      canvas.style.margin = "0";
-    } else {
-      // Desktop or no visualViewport
-      canvas.style.position = "fixed";
-      canvas.style.left = "0";
-      canvas.style.top = "0";
+
+    if (isMobile()) {
+      // Trên mobile chỉ scale bằng CSS, tránh resize canvas nội bộ
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
-      canvas.style.maxWidth = "none";
-      canvas.style.maxHeight = "none";
-      canvas.style.margin = "0";
+    } else {
+      // Desktop: cập nhật kích thước thật
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
     }
-
     // ✅ Trong fullscreen, tắt cuộn hoàn toàn
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
