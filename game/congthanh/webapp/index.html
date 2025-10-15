@@ -81,9 +81,7 @@ main {
   justify-content: center; /* căn giữa dọc */
   background: #1e293b;
   border-radius: 12px;
-  padding: 20px;
   text-align: center;
-  width: 90vw;
 }
 
 /* 🖥️ Canvas mặc định (desktop) */
@@ -100,8 +98,9 @@ canvas#canvas {
 /* 📱 Mobile giữ đúng tỉ lệ 9:16 và căn giữa */
 /* Mobile */ 
 @media (max-width: 768px) { 
-  .game-container {width: 100%;display: flex;align-items: center;justify-content: center;} 
-  canvas#canvas {width: 90%; height: calc(90vw * 16 / 9);border: 2px solid #334155;border-radius: 10px;background: #000;} }
+  .game-container {width: 100%;display: flex;flex-direction: column;align-items: center;justify-content: center;} 
+  canvas#canvas {width: 90%; height: calc(90vw * 16 / 9);border: 2px solid #334155;border-radius: 10px;background: #000;} 
+}
 
 /* 🖥️ Nút fullscreen căn giữa */
 .fullscreen-button {
@@ -153,6 +152,7 @@ footer {
   </section>
 
   <section class="game-container">
+    <div style="height:20px;"></div>
     <canvas id="canvas" width="1080" height="1920"></canvas>
     <div style="height:10px;"></div>
     <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
@@ -203,8 +203,8 @@ function resizeCanvas() {
   } else {
     // Khi thoát fullscreen → trả về CSS mặc định
     if (mobile) {
-      canvas.style.width = "90vw";
-      canvas.style.height = "calc(90vw * 16 / 9)";
+      canvas.style.width = "90%";
+      canvas.style.height = "calc(90% * 16 / 9)";
     } else {
       canvas.style.width = "486px";
       canvas.style.height = "864px";
