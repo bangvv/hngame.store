@@ -197,6 +197,7 @@ function getCanvasCoords(evt) {
     offsetY = (window.innerHeight - rect.height) / 2;
   }
 
+  console.log("offsetY:",offsetY)
   console.log("clientX:",(clientX - rect.left) * scaleX)
   console.log("clientY:",(clientY - rect.top - offsetY) * scaleY)
 
@@ -212,6 +213,7 @@ function getCanvasCoords(evt) {
     e.preventDefault();
     resizeCanvas();
     const p = getCanvasCoords(e);
+    console.log("canvas.addEventListener_mousedown_touchstart")
     if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
   })
 );
@@ -224,6 +226,7 @@ function getCanvasCoords(evt) {
 canvas.addEventListener("touchmove", e => {
   e.preventDefault();
   const p = getCanvasCoords(e);
+  console.log("canvas.addEventListener_touchmove")
   if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
 });
 
@@ -233,6 +236,7 @@ fullBtn.addEventListener("click", async () => {
     if (canvas.requestFullscreen) await canvas.requestFullscreen();
     else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
     setTimeout(resizeCanvas, 200);
+    console.log("fullBtn.addEventListener")
   } catch (e) {
     console.error("Fullscreen error:", e);
   }
