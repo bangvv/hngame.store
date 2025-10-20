@@ -116,38 +116,63 @@ function resizeCanvas() {
   const mobile = isMobile();
 
   if (full) {
-    if (isMobile()) {
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
+    if (mobile) {
+      // Giữ đúng tỷ lệ 9:16
+      const screenRatio = window.innerWidth / window.innerHeight;
+      const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+      let w, h;
+
+      if (screenRatio > targetRatio) {
+        // Màn hình quá rộng → căn giữa theo chiều ngang
+        h = window.innerHeight;
+        w = h * targetRatio;
+      } else {
+        // Màn hình quá cao → căn giữa theo chiều dọc
+        w = window.innerWidth;
+        h = w / targetRatio;
+      }
+
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+
+      // Căn giữa canvas
+      canvas.style.margin = "auto";
+      canvas.style.display = "block";
+
     } else {
+      // Desktop fullscreen
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
     }
+
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.width = "100%";
   } else {
+    // Bình thường
     document.body.style.position = "";
     document.body.style.width = "";
     canvas.width = LOGICAL_WIDTH;
     canvas.height = LOGICAL_HEIGHT;
-    
-        if (mobile) {
-          canvas.style.width = "90%";
-          canvas.style.height = "calc(90% * 16 / 9)";
-        } else {
-          canvas.style.width = "486px";
-          canvas.style.height = "864px";
-        }
+
+    if (mobile) {
+      canvas.style.width = "90%";
+      canvas.style.height = "calc(90% * 16 / 9)";
+    } else {
+      canvas.style.width = "486px";
+      canvas.style.height = "864px";
+    }
+
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
   }
 }
+
 
 
 function getCanvasCoords(evt) {
