@@ -115,21 +115,16 @@ function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
 
-  // luôn thiết lập buffer nội bộ bằng LOGICAL (nếu muốn support DPR, nhân ở đây)
-  // ví dụ: const dpr = window.devicePixelRatio || 1;
-  // canvas.width = LOGICAL_WIDTH * dpr;
-  // canvas.height = LOGICAL_HEIGHT * dpr;
-  // canvas.getContext('2d').scale(dpr, dpr);
-
-  // nếu bạn không dùng DPR:
-  canvas.width = LOGICAL_WIDTH;
-  canvas.height = LOGICAL_HEIGHT;
-
   if (full) {
-    // Hiển thị full bằng CSS (không thay đổi buffer)
+    if (isMobile()) {
     canvas.style.width = window.innerWidth + "px";
     canvas.style.height = window.innerHeight + "px";
-
+    } else {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
+    }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
@@ -137,13 +132,16 @@ function resizeCanvas() {
   } else {
     document.body.style.position = "";
     document.body.style.width = "";
-    if (mobile) {
-      canvas.style.width = "90%";
-      canvas.style.height = "calc(90% * 16 / 9)";
-    } else {
-      canvas.style.width = "486px";
-      canvas.style.height = "864px";
-    }
+    canvas.width = LOGICAL_WIDTH;
+    canvas.height = LOGICAL_HEIGHT;
+    
+        if (mobile) {
+          canvas.style.width = "90%";
+          canvas.style.height = "calc(90% * 16 / 9)";
+        } else {
+          canvas.style.width = "486px";
+          canvas.style.height = "864px";
+        }
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowY = "auto";
