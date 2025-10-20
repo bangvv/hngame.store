@@ -131,7 +131,8 @@ function resizeCanvas() {
         w = window.innerWidth;
         h = w / targetRatio;
       }
-
+      canvas.width = LOGICAL_WIDTH;   // Giữ buffer logic cho TeaVM
+      canvas.height = LOGICAL_HEIGHT;
       canvas.style.width = w + "px";
       canvas.style.height = h + "px";
 
