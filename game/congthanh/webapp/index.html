@@ -124,37 +124,31 @@ function resizeCanvas() {
       let w, h;
 
       if (screenRatio > targetRatio) {
-        // Màn hình quá rộng → căn giữa theo chiều ngang
         h = window.innerHeight;
         w = h * targetRatio;
       } else {
-        // Màn hình quá cao → căn giữa theo chiều dọc
         w = window.innerWidth;
         h = w / targetRatio;
       }
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
 
-      const ctx = canvas.getContext("2d");
-      ctx.scale(dpr, dpr);
-
+      // Canvas hiển thị
       canvas.style.width = w + "px";
       canvas.style.height = h + "px";
 
-      // Căn giữa canvas
+      // Canvas thực (pixel vật lý)
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+
       canvas.style.margin = "auto";
       canvas.style.display = "block";
-      console.log("resizeCanvas mobile")
+      console.log("resizeCanvas mobile");
     } else {
       // Desktop fullscreen
-      console.log("resizeCanvas Desktop")
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
-
-      const ctx = canvas.getContext("2d");
-      ctx.scale(dpr, dpr);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      console.log("resizeCanvas Desktop");
     }
 
     document.documentElement.style.overflow = "hidden";
@@ -165,15 +159,21 @@ function resizeCanvas() {
     // Bình thường
     document.body.style.position = "";
     document.body.style.width = "";
-    canvas.width = LOGICAL_WIDTH;
-    canvas.height = LOGICAL_HEIGHT;
 
     if (mobile) {
-      canvas.style.width = "90%";
-      canvas.style.height = "calc(90% * 16 / 9)";
+      const w = window.innerWidth * 0.9;
+      const h = w * 16 / 9;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
     } else {
-      canvas.style.width = "486px";
-      canvas.style.height = "864px";
+      const w = 486;
+      const h = 864;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
     }
 
     document.documentElement.style.overflowX = "hidden";
@@ -182,6 +182,7 @@ function resizeCanvas() {
     document.body.style.overflowY = "auto";
   }
 }
+
 
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
