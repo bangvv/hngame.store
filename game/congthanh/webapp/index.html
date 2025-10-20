@@ -167,6 +167,10 @@ function resizeCanvas() {
 
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect(); // always fresh per event
+  console.log(`canvas.width: ${canvas.width}`)
+  console.log(`canvas.height: ${canvas.height}`)
+  console.log(`rect.width: ${rect.width}`)
+  console.log(`rect.height: ${rect.height}`)
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
 
