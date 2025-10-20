@@ -210,47 +210,26 @@ canvas.addEventListener("touchmove", e => {
   if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
 });
 
-// === Fullscreen toggle (Tối ưu) ===
+// === Fullscreen toggle ===
 fullBtn.addEventListener("click", async () => {
-    try {
-        // Yêu cầu fullscreen trên toàn bộ document để ổn định hơn trên mobile
-        if (!document.fullscreenElement) {
-             // Thử request fullscreen trên document, fallback về canvas nếu cần
-            if (document.documentElement.requestFullscreen) {
-                await document.documentElement.requestFullscreen();
-            } else {
-                await canvas.requestFullscreen();
-            }
-        } else {
-            await document.exitFullscreen();
-        }
-        
-    } catch (e) {
-        console.error("Fullscreen error:", e);
-    }
-    // Không cần setTimeout ở đây, vì sự kiện 'fullscreenchange' sẽ xử lý
+  try {
+    if (canvas.requestFullscreen) await canvas.requestFullscreen();
+    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
+    setTimeout(resizeCanvas, 200);
+  } catch (e) {
+    console.error("Fullscreen error:", e);
+  }
 });
 
-// === Event thay đổi kích thước / xoay / fullscreen (Tối ưu) ===
-
-// Lắng nghe fullscreenchange trên document để bắt sự kiện thoát/vào fullscreen
-document.addEventListener("fullscreenchange", () => setTimeout(resizeCanvas, 50)); 
-document.addEventListener("webkitfullscreenchange", () => setTimeout(resizeCanvas, 50));
-
-// Lắng nghe resize và orientationchange trên window
-["resize", "orientationchange"].forEach(ev =>
-    window.addEventListener(ev, () => {
-        if (document.fullscreenElement) {
-            // Chỉ resize khi đang ở chế độ fullscreen (vì nó bị ảnh hưởng bởi xoay màn hình)
-            setTimeout(resizeCanvas, 50);
-        }
-    })
+// === Event thay đổi kích thước / xoay / fullscreen ===
+["resize", "orientationchange", "fullscreenchange"].forEach(ev =>
+  window.addEventListener(ev, () => setTimeout(resizeCanvas, 200))
 );
 
 // === Khởi động TeaVM game ===
 function start() {
-    resizeCanvas();
-    if (typeof main === "function") main();
+  resizeCanvas();
+  if (typeof main === "function") main();
 }
 window.addEventListener("load", start);
 </script>
