@@ -166,16 +166,15 @@ function resizeCanvas() {
 
 
 function getCanvasCoords(evt) {
-  const rect = canvas.getBoundingClientRect(); // important: get rect here, at event time
-  const scaleX = LOGICAL_WIDTH / rect.width;
-  const scaleY = LOGICAL_HEIGHT / rect.height;
+  const rect = canvas.getBoundingClientRect(); // always fresh per event
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
 
   let clientX, clientY;
   if (evt.touches && evt.touches.length > 0) {
     clientX = evt.touches[0].clientX;
     clientY = evt.touches[0].clientY;
   } else if (evt.changedTouches && evt.changedTouches.length > 0) {
-    // dùng changedTouches cho một số event (ví dụ touchend)
     clientX = evt.changedTouches[0].clientX;
     clientY = evt.changedTouches[0].clientY;
   } else {
@@ -188,6 +187,7 @@ function getCanvasCoords(evt) {
     y: (clientY - rect.top) * scaleY,
   };
 }
+
 
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
