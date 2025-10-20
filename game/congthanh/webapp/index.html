@@ -106,29 +106,8 @@ const fullBtn = document.getElementById("fullscreen-btn");
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
 
-let currentLogicalWidth = LOGICAL_WIDTH;
-let currentLogicalHeight = LOGICAL_HEIGHT;
-
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
-}
-
-const dpr = window.devicePixelRatio || 1;
-
-function setBuffer(logicalW, logicalH) {
-  // set internal buffer (pixel size) and scale context for DPR
-  canvas.width = Math.round(logicalW * dpr);
-  canvas.height = Math.round(logicalH * dpr);
-  const ctx = canvas.getContext('2d');
-  // reset transform then scale by dpr so canvas drawing uses logical coordinates
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  currentLogicalWidth = logicalW;
-  currentLogicalHeight = logicalH;
-}
-
-function applyCssSize(cssWidth, cssHeight) {
-  canvas.style.width = cssWidth;
-  canvas.style.height = cssHeight;
 }
 
 // === Resize canvas hiển thị ===
@@ -137,38 +116,47 @@ function resizeCanvas() {
   const mobile = isMobile();
 
   if (full) {
-    // FULLSCREEN mode
-    if (mobile) {
-      // Mobile full: keep logical buffer (so touch mapping stable), but stretch CSS to fill window
-      setBuffer(LOGICAL_WIDTH, LOGICAL_HEIGHT);
-      applyCssSize(window.innerWidth + "px", window.innerHeight + "px");
-    } else {
-      // Desktop full: adapt buffer to screen size so pixel-perfect and avoid letterboxing
-      // Use window size as logical to simplify mapping in fullscreen desktop
-      setBuffer(window.innerWidth, window.innerHeight);
-      applyCssSize("100vw", "100vh");
-    }
+    if (isMobile()) {
+        canvas.width = LOGICAL_WIDTH;
+        canvas.height = LOGICAL_HEIGHT;
 
+        const ratioCanvas = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+        const ratioScreen = window.innerWidth / window.innerHeight;
+
+        if (ratioScreen > ratioCanvas) {
+          // màn hình rộng hơn → canh theo chiều cao
+          const newW = window.innerHeight * ratioCanvas;
+          canvas.style.height = window.innerHeight + "px";
+          canvas.style.width = newW + "px";
+        } else {
+          // màn hình cao hơn → canh theo chiều rộng
+          const newH = window.innerWidth / ratioCanvas;
+          canvas.style.width = window.innerWidth + "px";
+          canvas.style.height = newH + "px";
+        }
+    } else {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
+    }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.width = "100%";
   } else {
-    // NOT fullscreen: restore normal layout
     document.body.style.position = "";
     document.body.style.width = "";
-
-    // keep internal buffer as logical
-    setBuffer(LOGICAL_WIDTH, LOGICAL_HEIGHT);
-
-    if (mobile) {
-      // mobile non-full: CSS use percentage
-      applyCssSize("90%", "calc(90% * 16 / 9)");
-    } else {
-      // desktop normal small preview
-      applyCssSize("486px", "864px");
-    }
-
+    canvas.width = LOGICAL_WIDTH;
+    canvas.height = LOGICAL_HEIGHT;
+    
+        if (mobile) {
+          canvas.style.width = "90%";
+          canvas.style.height = "calc(90% * 16 / 9)";
+        } else {
+          canvas.style.width = "486px";
+          canvas.style.height = "864px";
+        }
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowY = "auto";
@@ -176,18 +164,18 @@ function resizeCanvas() {
   }
 }
 
-// === Lấy toạ độ canvas chính xác ===
+
 function getCanvasCoords(evt) {
-  // Important: read rect right here (at event time)
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = currentLogicalWidth / rect.width;
-  const scaleY = currentLogicalHeight / rect.height;
+  const rect = canvas.getBoundingClientRect(); // important: get rect here, at event time
+  const scaleX = LOGICAL_WIDTH / rect.width;
+  const scaleY = LOGICAL_HEIGHT / rect.height;
 
   let clientX, clientY;
   if (evt.touches && evt.touches.length > 0) {
     clientX = evt.touches[0].clientX;
     clientY = evt.touches[0].clientY;
   } else if (evt.changedTouches && evt.changedTouches.length > 0) {
+    // dùng changedTouches cho một số event (ví dụ touchend)
     clientX = evt.changedTouches[0].clientX;
     clientY = evt.changedTouches[0].clientY;
   } else {
@@ -197,27 +185,24 @@ function getCanvasCoords(evt) {
 
   return {
     x: (clientX - rect.left) * scaleX,
-    y: (clientY - rect.top) * scaleY
+    y: (clientY - rect.top) * scaleY,
   };
 }
 
-// === Event listeners: KHÔNG gọi resizeCanvas() trong input handlers ===
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
     e.preventDefault();
-    // LẤY TỌA ĐỘ TRƯỚC KHI LÀM GÌ KHÁC
+    // resizeCanvas();
     const p = getCanvasCoords(e);
     if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
   })
 );
-
 ["mouseup", "touchend"].forEach(ev =>
   canvas.addEventListener(ev, e => {
     e.preventDefault();
     if (typeof gameTouchEnd === "function") gameTouchEnd();
   })
 );
-
 canvas.addEventListener("touchmove", e => {
   e.preventDefault();
   const p = getCanvasCoords(e);
@@ -229,7 +214,6 @@ fullBtn.addEventListener("click", async () => {
   try {
     if (canvas.requestFullscreen) await canvas.requestFullscreen();
     else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
-    // Chờ fullscreen state ổn định rồi resize
     setTimeout(resizeCanvas, 200);
   } catch (e) {
     console.error("Fullscreen error:", e);
@@ -248,7 +232,6 @@ function start() {
 }
 window.addEventListener("load", start);
 </script>
-
 
 </body>
 </html>
