@@ -115,16 +115,21 @@ function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
 
+  // luôn thiết lập buffer nội bộ bằng LOGICAL (nếu muốn support DPR, nhân ở đây)
+  // ví dụ: const dpr = window.devicePixelRatio || 1;
+  // canvas.width = LOGICAL_WIDTH * dpr;
+  // canvas.height = LOGICAL_HEIGHT * dpr;
+  // canvas.getContext('2d').scale(dpr, dpr);
+
+  // nếu bạn không dùng DPR:
+  canvas.width = LOGICAL_WIDTH;
+  canvas.height = LOGICAL_HEIGHT;
+
   if (full) {
-    if (isMobile()) {
+    // Hiển thị full bằng CSS (không thay đổi buffer)
     canvas.style.width = window.innerWidth + "px";
     canvas.style.height = window.innerHeight + "px";
-    } else {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
-    }
+
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
@@ -132,16 +137,13 @@ function resizeCanvas() {
   } else {
     document.body.style.position = "";
     document.body.style.width = "";
-    canvas.width = LOGICAL_WIDTH;
-    canvas.height = LOGICAL_HEIGHT;
-    
-        if (mobile) {
-          canvas.style.width = "90%";
-          canvas.style.height = "calc(90% * 16 / 9)";
-        } else {
-          canvas.style.width = "486px";
-          canvas.style.height = "864px";
-        }
+    if (mobile) {
+      canvas.style.width = "90%";
+      canvas.style.height = "calc(90% * 16 / 9)";
+    } else {
+      canvas.style.width = "486px";
+      canvas.style.height = "864px";
+    }
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowY = "auto";
@@ -151,7 +153,7 @@ function resizeCanvas() {
 
 
 function getCanvasCoords(evt) {
-  const rect = canvas.getBoundingClientRect();
+  const rect = canvas.getBoundingClientRect(); // important: get rect here, at event time
   const scaleX = LOGICAL_WIDTH / rect.width;
   const scaleY = LOGICAL_HEIGHT / rect.height;
 
@@ -159,6 +161,10 @@ function getCanvasCoords(evt) {
   if (evt.touches && evt.touches.length > 0) {
     clientX = evt.touches[0].clientX;
     clientY = evt.touches[0].clientY;
+  } else if (evt.changedTouches && evt.changedTouches.length > 0) {
+    // dùng changedTouches cho một số event (ví dụ touchend)
+    clientX = evt.changedTouches[0].clientX;
+    clientY = evt.changedTouches[0].clientY;
   } else {
     clientX = evt.clientX;
     clientY = evt.clientY;
@@ -173,7 +179,7 @@ function getCanvasCoords(evt) {
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
     e.preventDefault();
-    resizeCanvas();
+    // resizeCanvas();
     const p = getCanvasCoords(e);
     if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
   })
