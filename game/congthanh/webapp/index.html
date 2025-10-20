@@ -173,7 +173,6 @@ function resizeCanvas() {
   }
 }
 
-
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
@@ -186,17 +185,27 @@ function getCanvasCoords(evt) {
   } else if (evt.changedTouches && evt.changedTouches.length > 0) {
     clientX = evt.changedTouches[0].clientX;
     clientY = evt.changedTouches[0].clientY;
-  } else {
+  } else if (evt.clientX !== undefined && evt.clientY !== undefined) {
     clientX = evt.clientX;
     clientY = evt.clientY;
   }
+
+  // --- FIX LỆCH DO PHẦN ĐEN TRÊN DƯỚI ---
+  // Khi fullscreen, nếu canvas không cao bằng window.innerHeight thì có viền đen -> phải trừ bù
+  let offsetY = 0;
+  if (document.fullscreenElement && window.innerHeight > rect.height) {
+    offsetY = (window.innerHeight - rect.height) / 2;
+  }
+
   console.log("clientX:",(clientX - rect.left) * scaleX)
-  console.log("clientY:",(clientY - rect.top) * scaleY)
+  console.log("clientY:",(clientY - rect.top - offsetY) * scaleY)
+
   return {
     x: (clientX - rect.left) * scaleX,
-    y: (clientY - rect.top) * scaleY,
+    y: (clientY - rect.top - offsetY) * scaleY,
   };
 }
+
 
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
