@@ -174,23 +174,24 @@ function resizeCanvas() {
 }
 
 
-
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = LOGICAL_WIDTH / rect.width;
-  const scaleY = LOGICAL_HEIGHT / rect.height;
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
 
-  let clientX, clientY;
+  let clientX = 0, clientY = 0;
   if (evt.touches && evt.touches.length > 0) {
     clientX = evt.touches[0].clientX;
     clientY = evt.touches[0].clientY;
+  } else if (evt.changedTouches && evt.changedTouches.length > 0) {
+    clientX = evt.changedTouches[0].clientX;
+    clientY = evt.changedTouches[0].clientY;
   } else {
     clientX = evt.clientX;
     clientY = evt.clientY;
   }
   console.log("clientX:",(clientX - rect.left) * scaleX)
   console.log("clientY:",(clientY - rect.top) * scaleY)
-
   return {
     x: (clientX - rect.left) * scaleX,
     y: (clientY - rect.top) * scaleY,
