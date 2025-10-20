@@ -138,9 +138,10 @@ function resizeCanvas() {
       // Căn giữa canvas
       canvas.style.margin = "auto";
       canvas.style.display = "block";
-
+      console.log("resizeCanvas mobile")
     } else {
       // Desktop fullscreen
+      console.log("resizeCanvas Desktop")
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       canvas.style.width = "100vw";
