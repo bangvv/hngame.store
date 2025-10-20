@@ -195,7 +195,7 @@ function getCanvasCoords(evt) {
   // --- FIX LỆCH DO PHẦN ĐEN TRÊN DƯỚI ---
   // Khi fullscreen, nếu canvas không cao bằng window.innerHeight thì có viền đen -> phải trừ bù
   let offsetY = 0;
-  if (document.fullscreenElement && window.innerHeight > rect.height) {
+  if (window.innerHeight > rect.height + 1) {
     offsetY = (window.innerHeight - rect.height) / 2;
   }
 
