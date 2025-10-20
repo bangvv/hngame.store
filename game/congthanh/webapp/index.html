@@ -110,94 +110,72 @@ function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 }
 
-// === Resize canvas hiển thị (Phiên bản cố định) ===
+// === Resize canvas hiển thị ===
 function resizeCanvas() {
-    const full = !!document.fullscreenElement;
-    const mobile = isMobile();
+  const full = !!document.fullscreenElement;
+  const mobile = isMobile();
 
-    // 1. LUÔN đặt kích thước nội tại (vẽ) của canvas theo kích thước logic 1080x1920
+  if (full) {
+    if (isMobile()) {
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+    } else {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
+    }
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+  } else {
+    document.body.style.position = "";
+    document.body.style.width = "";
     canvas.width = LOGICAL_WIDTH;
     canvas.height = LOGICAL_HEIGHT;
-
-    if (full) {
-        // --- CHẾ ĐỘ TOÀN MÀN HÌNH (Áp dụng cho cả mobile và desktop) ---
-        
-        // Thiết lập body/html để fullscreen chuẩn
-        document.documentElement.style.overflow = "hidden";
-        document.body.style.overflow = "hidden";
-        document.body.style.position = "fixed"; 
-        document.body.style.width = "100%";
-        document.body.style.height = "100%"; // Thêm thuộc tính này
-
-        const ratioCanvas = LOGICAL_WIDTH / LOGICAL_HEIGHT;
-        const ratioScreen = window.innerWidth / window.innerHeight;
-        
-        // Luôn căn giữa canvas (CSS)
-        canvas.style.margin = 'auto';
-        canvas.style.display = 'block'; // Đảm bảo không có khoảng trắng
-
-        // Tính toán kích thước hiển thị (style) để giữ đúng tỉ lệ 9:16
-        if (ratioScreen > ratioCanvas) {
-            // Màn hình rộng hơn (landscape): Canh theo chiều cao
-            const newW = window.innerHeight * ratioCanvas;
-            canvas.style.height = window.innerHeight + "px";
-            canvas.style.width = newW + "px";
-        } else {
-            // Màn hình cao hơn (portrait): Canh theo chiều rộng
-            const newH = window.innerWidth / ratioCanvas;
-            canvas.style.width = window.innerWidth + "px";
-            canvas.style.height = newH + "px";
-        }
-    } else {
-        // --- CHẾ ĐỘ THÔNG THƯỜNG ---
-        document.body.style.position = "";
-        document.body.style.width = "";
-        document.body.style.height = "";
-        
-        // Đặt lại kích thước CSS như trong file CSS gốc
+    
         if (mobile) {
-            canvas.style.width = "90%";
-            canvas.style.height = "calc(90% * 16 / 9)";
+          canvas.style.width = "90%";
+          canvas.style.height = "calc(90% * 16 / 9)";
         } else {
-            canvas.style.width = "486px";
-            canvas.style.height = "864px";
+          canvas.style.width = "486px";
+          canvas.style.height = "864px";
         }
-        canvas.style.margin = "0 auto";
-        document.documentElement.style.overflowX = "hidden";
-        document.body.style.overflowX = "hidden";
-        document.documentElement.style.overflowY = "auto";
-        document.body.style.overflowY = "auto";
-    }
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+    document.documentElement.style.overflowY = "auto";
+    document.body.style.overflowY = "auto";
+  }
 }
+
 
 function getCanvasCoords(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = LOGICAL_WIDTH / rect.width;
+  const scaleY = LOGICAL_HEIGHT / rect.height;
+
   let clientX, clientY;
   if (evt.touches && evt.touches.length > 0) {
-      clientX = evt.touches[0].clientX;
-      clientY = evt.touches[0].clientY;
-  } else if (evt.changedTouches && evt.changedTouches.length > 0) {
-      clientX = evt.changedTouches[0].clientX;
-      clientY = evt.changedTouches[0].clientY;
+    clientX = evt.touches[0].clientX;
+    clientY = evt.touches[0].clientY;
   } else {
-      clientX = evt.clientX;
-      clientY = evt.clientY;
+    clientX = evt.clientX;
+    clientY = evt.clientY;
   }
+  console.log("clientX:",(clientX - rect.left) * scaleX)
+  console.log("clientY:",(clientY - rect.top) * scaleY)
 
-  const rect = canvas.getBoundingClientRect(); 
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
   return {
-      x: (clientX - rect.left) * scaleX,
-      y: (clientY - rect.top) * scaleY,
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY,
   };
 }
-
-
 
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
     e.preventDefault();
-    // resizeCanvas();
+    resizeCanvas();
     const p = getCanvasCoords(e);
     if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
   })
