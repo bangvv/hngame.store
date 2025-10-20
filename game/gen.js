@@ -157,16 +157,38 @@ function isMobile() {
 function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
+  const dpr = window.devicePixelRatio || 1;
 
   if (full) {
     if (isMobile()) {
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
+      // Giữ đúng tỷ lệ 9:16
+      const screenRatio = window.innerWidth / window.innerHeight;
+      const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+      let w, h;
+
+      if (screenRatio > targetRatio) {
+        h = window.innerHeight;
+        w = h * targetRatio;
+      } else {
+        w = window.innerWidth;
+        h = w / targetRatio;
+      }
+
+      // Canvas hiển thị
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+
+      // Canvas thực (pixel vật lý)
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+
+      canvas.style.margin = "auto";
+      canvas.style.display = "block";
     } else {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
@@ -204,23 +226,43 @@ function resizeCanvas() {
 
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = LOGICAL_WIDTH / rect.width;
-  const scaleY = LOGICAL_HEIGHT / rect.height;
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
 
-  let clientX, clientY;
+  let clientX = 0, clientY = 0;
   if (evt.touches && evt.touches.length > 0) {
     clientX = evt.touches[0].clientX;
     clientY = evt.touches[0].clientY;
-  } else {
+  } else if (evt.changedTouches && evt.changedTouches.length > 0) {
+    clientX = evt.changedTouches[0].clientX;
+    clientY = evt.changedTouches[0].clientY;
+  } else if (evt.clientX !== undefined && evt.clientY !== undefined) {
     clientX = evt.clientX;
     clientY = evt.clientY;
   }
 
-  return {
-    x: (clientX - rect.left) * scaleX,
-    y: (clientY - rect.top) * scaleY,
-  };
+  // --- Bù viền đen ---
+  let offsetX = 0, offsetY = 0;
+
+  // Nếu canvas không đầy chiều ngang -> có viền 2 bên
+  if (window.innerWidth > rect.width + 1) {
+    offsetX = (window.innerWidth - rect.width) / 2;
+  }
+
+  // Nếu canvas không đầy chiều dọc -> có viền trên dưới
+  if (window.innerHeight > rect.height + 1) {
+    offsetY = (window.innerHeight - rect.height) / 2;
+  }
+
+  const x = (clientX - rect.left - offsetX) * scaleX;
+  const y = (clientY - rect.top - offsetY) * scaleY;
+
+  // Debug xem có đúng không
+  console.log({offsetX, offsetY, x, y});
+
+  return { x, y };
 }
+
 
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {

@@ -117,7 +117,7 @@ function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
 
   if (full) {
-    if (mobile) {
+    if (isMobile()) {
       // Giữ đúng tỷ lệ 9:16
       const screenRatio = window.innerWidth / window.innerHeight;
       const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
@@ -141,49 +141,35 @@ function resizeCanvas() {
 
       canvas.style.margin = "auto";
       canvas.style.display = "block";
-      console.log("resizeCanvas mobile window.innerWidth",window.innerWidth);
-      console.log("resizeCanvas mobile window.innerHeight",window.innerHeight);
     } else {
-      // Desktop fullscreen
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
-      console.log("resizeCanvas Desktop");
     }
-
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.width = "100%";
   } else {
-    // Bình thường
     document.body.style.position = "";
     document.body.style.width = "";
-
-    if (mobile) {
-      const w = window.innerWidth * 0.9;
-      const h = w * 16 / 9;
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-    } else {
-      const w = 486;
-      const h = 864;
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-    }
-
+    canvas.width = LOGICAL_WIDTH;
+    canvas.height = LOGICAL_HEIGHT;
+    
+        if (mobile) {
+          canvas.style.width = "90%";
+          canvas.style.height = "calc(90% * 16 / 9)";
+        } else {
+          canvas.style.width = "486px";
+          canvas.style.height = "864px";
+        }
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
   }
 }
-
 
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
@@ -202,29 +188,34 @@ function getCanvasCoords(evt) {
     clientY = evt.clientY;
   }
 
-  // --- FIX LỆCH DO PHẦN ĐEN TRÊN DƯỚI ---
-  // Khi fullscreen, nếu canvas không cao bằng window.innerHeight thì có viền đen -> phải trừ bù
-  let offsetY = 0;
+  // --- Bù viền đen ---
+  let offsetX = 0, offsetY = 0;
+
+  // Nếu canvas không đầy chiều ngang -> có viền 2 bên
+  if (window.innerWidth > rect.width + 1) {
+    offsetX = (window.innerWidth - rect.width) / 2;
+  }
+
+  // Nếu canvas không đầy chiều dọc -> có viền trên dưới
   if (window.innerHeight > rect.height + 1) {
     offsetY = (window.innerHeight - rect.height) / 2;
   }
 
-  console.log("offsetY:",offsetY)
-  console.log("clientX:",(clientX - rect.left) * scaleX)
-  console.log("clientY:",(clientY - rect.top - offsetY) * scaleY)
+  const x = (clientX - rect.left - offsetX) * scaleX;
+  const y = (clientY - rect.top - offsetY) * scaleY;
 
-  return {
-    x: (clientX - rect.left) * scaleX,
-    y: (clientY - rect.top - offsetY) * scaleY,
-  };
+  // Debug xem có đúng không
+  console.log({offsetX, offsetY, x, y});
+
+  return { x, y };
 }
+
 
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
     e.preventDefault();
     resizeCanvas();
     const p = getCanvasCoords(e);
-    console.log("canvas.addEventListener_mousedown_touchstart")
     if (typeof gameTouchStart === "function") gameTouchStart(p.x, p.y);
   })
 );
@@ -237,22 +228,15 @@ function getCanvasCoords(evt) {
 canvas.addEventListener("touchmove", e => {
   e.preventDefault();
   const p = getCanvasCoords(e);
-  console.log("canvas.addEventListener_touchmove")
   if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
 });
 
 // === Fullscreen toggle ===
 fullBtn.addEventListener("click", async () => {
   try {
-    if (canvas.requestFullscreen) {
-      await canvas.requestFullscreen();
-      console.log("fullBtn.addEventListener ___ 1")
-    } else if (canvas.webkitRequestFullscreen) {
-      await canvas.webkitRequestFullscreen();
-      console.log("fullBtn.addEventListener ___ 2")
-    } 
+    if (canvas.requestFullscreen) await canvas.requestFullscreen();
+    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
     setTimeout(resizeCanvas, 200);
-    console.log("fullBtn.addEventListener")
   } catch (e) {
     console.error("Fullscreen error:", e);
   }
