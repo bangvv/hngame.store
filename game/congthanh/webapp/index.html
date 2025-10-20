@@ -110,43 +110,50 @@ function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 }
 
-// === Resize canvas hiển thị ===
 function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
+  const dpr = window.devicePixelRatio || 1; // <--- thêm dòng này
 
   if (full) {
     if (mobile) {
-      // Giữ đúng tỷ lệ 9:16
       const screenRatio = window.innerWidth / window.innerHeight;
       const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
       let w, h;
 
       if (screenRatio > targetRatio) {
-        // Màn hình quá rộng → căn giữa theo chiều ngang
         h = window.innerHeight;
         w = h * targetRatio;
       } else {
-        // Màn hình quá cao → căn giữa theo chiều dọc
         w = window.innerWidth;
         h = w / targetRatio;
       }
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+
+      // Set style (hiển thị)
       canvas.style.width = w + "px";
       canvas.style.height = h + "px";
 
-      // Căn giữa canvas
+      // Set độ phân giải thực (pixel vật lý)
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+
       canvas.style.margin = "auto";
       canvas.style.display = "block";
-      console.log("resizeCanvas mobile")
+      console.log("resizeCanvas mobile");
     } else {
       // Desktop fullscreen
-      console.log("resizeCanvas Desktop")
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+
+      console.log("resizeCanvas Desktop");
     }
 
     document.documentElement.style.overflow = "hidden";
@@ -157,15 +164,22 @@ function resizeCanvas() {
     // Bình thường
     document.body.style.position = "";
     document.body.style.width = "";
-    canvas.width = LOGICAL_WIDTH;
-    canvas.height = LOGICAL_HEIGHT;
+    const ctx = canvas.getContext("2d");
 
     if (mobile) {
-      canvas.style.width = "90%";
-      canvas.style.height = "calc(90% * 16 / 9)";
+      const w = window.innerWidth * 0.9;
+      const h = w * 16 / 9;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
     } else {
       canvas.style.width = "486px";
       canvas.style.height = "864px";
+      canvas.width = 486 * dpr;
+      canvas.height = 864 * dpr;
+      ctx.scale(dpr, dpr);
     }
 
     document.documentElement.style.overflowX = "hidden";
@@ -174,6 +188,72 @@ function resizeCanvas() {
     document.body.style.overflowY = "auto";
   }
 }
+
+
+// // === Resize canvas hiển thị ===
+// function resizeCanvas() {
+//   const full = !!document.fullscreenElement;
+//   const mobile = isMobile();
+
+//   if (full) {
+//     if (mobile) {
+//       // Giữ đúng tỷ lệ 9:16
+//       const screenRatio = window.innerWidth / window.innerHeight;
+//       const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+//       let w, h;
+
+//       if (screenRatio > targetRatio) {
+//         // Màn hình quá rộng → căn giữa theo chiều ngang
+//         h = window.innerHeight;
+//         w = h * targetRatio;
+//       } else {
+//         // Màn hình quá cao → căn giữa theo chiều dọc
+//         w = window.innerWidth;
+//         h = w / targetRatio;
+//       }
+//       canvas.width = window.innerWidth;
+//       canvas.height = window.innerHeight;
+//       canvas.style.width = w + "px";
+//       canvas.style.height = h + "px";
+
+//       // Căn giữa canvas
+//       canvas.style.margin = "auto";
+//       canvas.style.display = "block";
+//       console.log("resizeCanvas mobile")
+//     } else {
+//       // Desktop fullscreen
+//       console.log("resizeCanvas Desktop")
+//       canvas.width = window.innerWidth;
+//       canvas.height = window.innerHeight;
+//       canvas.style.width = "100vw";
+//       canvas.style.height = "100vh";
+//     }
+
+//     document.documentElement.style.overflow = "hidden";
+//     document.body.style.overflow = "hidden";
+//     document.body.style.position = "fixed";
+//     document.body.style.width = "100%";
+//   } else {
+//     // Bình thường
+//     document.body.style.position = "";
+//     document.body.style.width = "";
+//     canvas.width = LOGICAL_WIDTH;
+//     canvas.height = LOGICAL_HEIGHT;
+
+//     if (mobile) {
+//       canvas.style.width = "90%";
+//       canvas.style.height = "calc(90% * 16 / 9)";
+//     } else {
+//       canvas.style.width = "486px";
+//       canvas.style.height = "864px";
+//     }
+
+//     document.documentElement.style.overflowX = "hidden";
+//     document.body.style.overflowX = "hidden";
+//     document.documentElement.style.overflowY = "auto";
+//     document.body.style.overflowY = "auto";
+//   }
+// }
 
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
@@ -208,7 +288,6 @@ function getCanvasCoords(evt) {
     y: (clientY - rect.top - offsetY) * scaleY,
   };
 }
-
 
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
