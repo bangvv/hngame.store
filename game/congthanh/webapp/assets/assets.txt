@@ -4,7 +4,9 @@ i:b:/fonts/Baloo2-Medium.ttf:420284:1
 i:b:/fonts/Bangers-Regular.ttf:92468:1
 i:b:/fonts/MouldyCheeseRegular-WyMWG.ttf:112116:1
 i:d:/images:0:1
+i:b:/images/bg_level.png:3215:1
 i:b:/images/bg_play.png:1013798:1
+i:b:/images/bg_play_dn.png:867284:1
 i:b:/images/curH.png:252:1
 i:b:/images/curM.png:270:1
 i:b:/images/des_hoa.png:21034:1
@@ -30,7 +32,6 @@ i:b:/images/logo.png:23796:1
 i:b:/images/moc_1_1.png:7099:1
 i:b:/images/moc_2_1.png:2002:1
 i:b:/images/moc_2_2.png:3125:1
-i:b:/images/nv3.png:116695:1
 i:b:/images/ovH.png:2754:1
 i:b:/images/ovM.png:2355:1
 i:b:/images/player_1.png:77327:1
