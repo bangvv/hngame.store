@@ -119,6 +119,7 @@ const canvas = document.getElementById("canvas");
 const fullBtn = document.getElementById("fullscreen-btn");
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
+const scale = Math.ceil(window.innerHeight / 1080);
 
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
@@ -158,10 +159,8 @@ function resizeCanvas() {
     } else {
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
-      console.log("window.innerWidth", window.innerWidth);
-      console.log("window.innerHeight", window.innerHeight);
-      canvas.width = window.innerWidth*4;
-      canvas.height = window.innerHeight*4;
+      canvas.width = window.innerWidth*scale;
+      canvas.height = window.innerHeight*scale;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
