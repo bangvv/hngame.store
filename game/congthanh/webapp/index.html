@@ -160,8 +160,8 @@ function resizeCanvas() {
       canvas.style.height = "100vh";
       console.log("window.innerWidth", window.innerWidth);
       console.log("window.innerHeight", window.innerHeight);
-      canvas.width = LOGICAL_WIDTH;
-      canvas.height = LOGICAL_HEIGHT;
+      canvas.width = window.innerWidth*2;
+      canvas.height = window.innerHeight*2;
 
       window.dispatchEvent(new Event("resize"));
     }
