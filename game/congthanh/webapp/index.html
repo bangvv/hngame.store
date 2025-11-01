@@ -156,10 +156,25 @@ function resizeCanvas() {
       canvas.style.margin = "auto";
       canvas.style.display = "block";
     } else {
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
+      const screenRatio = window.innerWidth / window.innerHeight;
+      const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+      let w, h;
+
+      if (screenRatio > targetRatio) {
+        h = window.innerHeight;
+        w = h * targetRatio;
+      } else {
+        w = window.innerWidth;
+        h = w / targetRatio;
+      }
+
+      // Canvas hiển thị
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+
+      // Canvas thực (pixel vật lý)
+      canvas.width = LOGICAL_WIDTH;
+      canvas.height = LOGICAL_HEIGHT;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
