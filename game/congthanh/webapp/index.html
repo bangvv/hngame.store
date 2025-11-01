@@ -158,8 +158,8 @@ function resizeCanvas() {
     } else {
       canvas.style.width = "100vw";
       canvas.style.height = "100vh";
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
+      canvas.width = LOGICAL_WIDTH;
+      canvas.height = LOGICAL_HEIGHT;
 
       window.dispatchEvent(new Event("resize"));
     }
