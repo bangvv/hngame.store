@@ -128,52 +128,38 @@ function isMobile() {
 function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
-  const dpr = window.devicePixelRatio || 1;
   
   if (full) {
-    if (isMobile()) {
-      // Giữ đúng tỷ lệ 9:16
-      const screenRatio = window.innerWidth / window.innerHeight;
-      const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
-      let w, h;
+    // --- Chế độ Fullscreen (cho cả mobile và desktop) ---
+    // Giữ đúng tỷ lệ 9:16 để không bị méo hình
+    const screenRatio = window.innerWidth / window.innerHeight;
+    const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT; // 9 / 16
+    let w, h;
 
-      if (screenRatio > targetRatio) {
-        h = window.innerHeight;
-        w = h * targetRatio;
-      } else {
-        w = window.innerWidth;
-        h = w / targetRatio;
-      }
-
-      // Canvas hiển thị
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
-
-      // Canvas thực (pixel vật lý)
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-
-      canvas.style.margin = "auto";
-      canvas.style.display = "block";
-    } else {
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
-      console.log("desktop full dpr",dpr)
-      console.log("desktop full width",Math.floor(window.innerWidth * dpr))
-      console.log("desktop full height",Math.floor(window.innerHeight * dpr))
-      // Canvas thực (pixel vật lý)
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
+    if (screenRatio > targetRatio) { // Màn hình rộng hơn game (vd: desktop)
+      h = window.innerHeight;
+      w = h * targetRatio;
+    } else { // Màn hình cao hơn game (vd: điện thoại dọc)
+      w = window.innerWidth;
+      h = w / targetRatio;
     }
+
+    // Cập nhật kích thước hiển thị CSS
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    canvas.style.margin = "auto";
+    canvas.style.display = "block";
+    
+    // Ẩn thanh cuộn và cố định body
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.width = "100%";
   } else {
+    // --- Chế độ bình thường (không fullscreen) ---
     document.body.style.position = "";
     document.body.style.width = "";
-    canvas.width = LOGICAL_WIDTH;
-    canvas.height = LOGICAL_HEIGHT;
+    canvas.style.margin = "0 auto";
     
         if (mobile) {
           canvas.style.width = "90%";
@@ -182,11 +168,17 @@ function resizeCanvas() {
           canvas.style.width = "486px";
           canvas.style.height = "864px";
         }
+    // Hiển thị lại thanh cuộn
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
   }
+
+  // QUAN TRỌNG: Luôn giữ kích thước bề mặt vẽ ở độ phân giải cao nhất.
+  // Điều này sửa lỗi hình bị vỡ và đảm bảo tọa độ click luôn đúng.
+  canvas.width = LOGICAL_WIDTH;
+  canvas.height = LOGICAL_HEIGHT;
 }
 
 
