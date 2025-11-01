@@ -70,16 +70,26 @@
 </nav>
 
 <main>
+  <!-- 🎮 Giới thiệu game -->
   <section class="section">
     <h2>🎮 Giới thiệu game</h2>
-    <p><strong>Công Thành Chiến</strong> là trò chơi trí tuệ đỉnh cao, lựa chọn của bạn quyết định vận mệnh của bạn, hãy chơi hết mình để tiến đến đinh cao.</p>
+    <p>
+      <strong>Thần Tộc Song Chiến</strong> – bước vào thế giới <em>Thần Tộc Song Đấu</em>, nơi những vị anh hùng sở hữu sức mạnh nguyên tố chiến đấu vì vinh quang của tộc mình!
+    </p>
+
+    <ul>
+      <li><strong>🔥 Lối chơi kết hợp độc đáo:</strong> Ghép 3 viên ngọc cùng màu để tung chiêu, kích hoạt kỹ năng, hoặc tạo combo phá huỷ toàn bàn!</li>
+      <li><strong>🌪️ Hệ thống nguyên tố phong phú:</strong> Lửa, Băng, Thổ, Mộc – mỗi nguyên tố mở ra chiến thuật riêng biệt.</li>
+      <li><strong>⚔️ Chiến đấu RPG kịch tính:</strong> Thu thập, nâng cấp, tiến hoá anh hùng của bạn. Kết hợp kỹ năng thông minh để đánh bại boss khủng.</li>
+      <li><strong>🎨 Đồ họa sống động:</strong> Hiệu ứng kỹ năng bùng nổ, hình ảnh nhân vật được thiết kế tinh xảo, mang đến trải nghiệm mãn nhãn.</li>
+    </ul>
   </section>
 
   <section class="game-container">
-  <div style="height:20px;"></div>
-    <canvas id="canvas" width=1080 height=1920></canvas>
+    <div style="height:20px;"></div>
+    <canvas id="canvas" width="1080" height="1920"></canvas>
     <div style="height:10px;"></div>
-    <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
+    <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình</button>
     <div style="height:10px;"></div>
   </section>
 
@@ -88,11 +98,15 @@
   <section class="section">
     <h2>📜 Hướng dẫn chơi</h2>
     <ul>
-      <li>ghép các item với nhau để đạt được giá trị tương ứng.</li>
-      <li>Game match-3 huyền thoại.</li>
+      <li>🔹 Ghép các viên ngọc cùng màu để tạo combo và tung chiêu đặc biệt.</li>
+      <li>🔹 Mỗi nguyên tố có kỹ năng riêng — kết hợp chiến thuật để vượt qua các trận đấu khó.</li>
+      <li>🔹 Thu thập anh hùng mới, nâng cấp sức mạnh và mở khóa kỹ năng tối thượng.</li>
+      <li>🔹 Sử dụng vật phẩm hỗ trợ thông minh để giành chiến thắng nhanh hơn.</li>
+      <li>🔹 Đừng quên hoàn thành nhiệm vụ ngày để nhận thưởng hấp dẫn!</li>
     </ul>
   </section>
 </main>
+
 
 <footer>
   &copy; 2025 HN Game. Tất cả bản quyền được bảo lưu.
@@ -115,7 +129,7 @@ function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
   const dpr = window.devicePixelRatio || 1;
-
+  
   if (full) {
     if (isMobile()) {
       // Giữ đúng tỷ lệ 9:16
@@ -171,45 +185,26 @@ function resizeCanvas() {
   }
 }
 
+
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
+  const scaleX = LOGICAL_WIDTH / rect.width;
+  const scaleY = LOGICAL_HEIGHT / rect.height;
 
-  let clientX = 0, clientY = 0;
+  let clientX, clientY;
   if (evt.touches && evt.touches.length > 0) {
     clientX = evt.touches[0].clientX;
     clientY = evt.touches[0].clientY;
-  } else if (evt.changedTouches && evt.changedTouches.length > 0) {
-    clientX = evt.changedTouches[0].clientX;
-    clientY = evt.changedTouches[0].clientY;
-  } else if (evt.clientX !== undefined && evt.clientY !== undefined) {
+  } else {
     clientX = evt.clientX;
     clientY = evt.clientY;
   }
 
-  // --- Bù viền đen ---
-  let offsetX = 0, offsetY = 0;
-
-  // Nếu canvas không đầy chiều ngang -> có viền 2 bên
-  if (window.innerWidth > rect.width + 1) {
-    offsetX = (window.innerWidth - rect.width) / 2;
-  }
-
-  // Nếu canvas không đầy chiều dọc -> có viền trên dưới
-  if (window.innerHeight > rect.height + 1) {
-    offsetY = (window.innerHeight - rect.height) / 2;
-  }
-
-  const x = (clientX - rect.left - offsetX) * scaleX;
-  const y = (clientY - rect.top - offsetY) * scaleY;
-
-  // Debug xem có đúng không
-  console.log({offsetX, offsetY, x, y});
-
-  return { x, y };
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY,
+  };
 }
-
 
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
