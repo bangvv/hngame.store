@@ -160,10 +160,8 @@ function resizeCanvas() {
       canvas.style.height = "100vh";
       console.log("window.innerWidth", window.innerWidth);
       console.log("window.innerHeight", window.innerHeight);
-      canvas.width = window.innerWidth*2;
-      canvas.height = window.innerHeight*2;
-
-      window.dispatchEvent(new Event("resize"));
+      canvas.width = window.innerWidth*4;
+      canvas.height = window.innerHeight*4;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
