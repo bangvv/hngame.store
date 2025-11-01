@@ -142,10 +142,10 @@ function resizeCanvas() {
       canvas.style.margin = "auto";
       canvas.style.display = "block";
     } else {
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      canvas.width = LOGICAL_WIDTH;
+      canvas.height = LOGICAL_HEIGHT;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
