@@ -29,25 +29,21 @@
   .section {background: #1e293b;border-radius: 10px;padding: 20px;margin-bottom: 20px;}
   .section h2 {color: #60a5fa;margin-top: 0;}
   .game-container {display: flex;flex-direction: column;justify-content: center;background: #1e293b;border-radius: 12px;text-align: center;}
-  
-  canvas#canvas {
-    display: block;
-    background: #000;
-    border: 2px solid #334155;
-    border-radius: 10px;
-    width: 486px;  /* 9:16 */
-    height: 864px;
-    margin: 0 auto;
-  }
+  .download-section {background: linear-gradient(135deg, #0f172a, #1e293b);border-radius: 14px;padding: 25px 30px;margin-bottom: 30px;box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);}
+  .download-container {display: flex;align-items: center;justify-content: space-between;gap: 20px;flex-wrap: wrap;}
+  .download-text h2 {color: #60a5fa;margin: 0;font-size: 26px;}
+  .download-text p {color: #cbd5e1;font-size: 16px;margin-top: 6px;}
+  .download-button {width: 175px;height: 50px;background: none;border: none;cursor: pointer;transition: transform 0.25s ease, box-shadow 0.25s ease;border-radius: 12px;}
+  .download-button:hover {transform: scale(1.05);box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);}
+  .download-icon {width: 175px;height: 50px;object-fit: contain;}
+  canvas#canvas {display: block;background: #000;border: 2px solid #334155;border-radius: 10px;width: 486px;  /* 9:16 */height: 864px;margin: 0 auto;}
   @media (max-width: 768px) { 
     .game-container {width: 100%;display: flex;flex-direction: column;align-items: center;justify-content: center;}
-    canvas#canvas {
-      width: 90%;
-      height: calc(90% * 16 / 9);
-      border: 2px solid #334155;
-      border-radius: 10px;
-      background: #000;
-    }
+    canvas#canvas {width: 90%;height: calc(90% * 16 / 9);border: 2px solid #334155;border-radius: 10px;background: #000;}
+    .download-container {flex-direction: column;align-items: center;text-align: center;}
+    .download-text h2 {font-size: 22px;}
+    .download-button {width: 220px;height: 65px;}
+    .download-icon {width: 220px;height: 65px;}
   }
   footer {text-align: center;padding: 20px;background: #1e293b;color: #94a3b8;font-size: 14px;}
   * {box-sizing: border-box;max-width: 100vw;}
@@ -70,26 +66,30 @@
 </nav>
 
 <main>
-  <!-- 🎮 Giới thiệu game -->
+  <section class="download-section">
+    <div class="download-container">
+      <div class="download-text">
+        <h2>🚀 Tải game ngay</h2>
+        <p>Trải nghiệm miễn phí trên Android – bắt đầu hành trình chinh phục của bạn!</p>
+      </div>
+
+      <button class="download-button"
+        onclick="window.open('https://play.google.com/store/apps/details?id=com.hngame.congthanh', '_blank')">
+        <img src="../../../image/icon_button_download.png" alt="Tải game Android" class="download-icon" />
+      </button>
+    </div>
+  </section>
+
   <section class="section">
     <h2>🎮 Giới thiệu game</h2>
-    <p>
-      <strong>Thần Tộc Song Chiến</strong> – bước vào thế giới <em>Thần Tộc Song Đấu</em>, nơi những vị anh hùng sở hữu sức mạnh nguyên tố chiến đấu vì vinh quang của tộc mình!
-    </p>
-
-    <ul>
-      <li><strong>🔥 Lối chơi kết hợp độc đáo:</strong> Ghép 3 viên ngọc cùng màu để tung chiêu, kích hoạt kỹ năng, hoặc tạo combo phá huỷ toàn bàn!</li>
-      <li><strong>🌪️ Hệ thống nguyên tố phong phú:</strong> Lửa, Băng, Thổ, Mộc – mỗi nguyên tố mở ra chiến thuật riêng biệt.</li>
-      <li><strong>⚔️ Chiến đấu RPG kịch tính:</strong> Thu thập, nâng cấp, tiến hoá anh hùng của bạn. Kết hợp kỹ năng thông minh để đánh bại boss khủng.</li>
-      <li><strong>🎨 Đồ họa sống động:</strong> Hiệu ứng kỹ năng bùng nổ, hình ảnh nhân vật được thiết kế tinh xảo, mang đến trải nghiệm mãn nhãn.</li>
-    </ul>
+    <p><strong>Công Thành Chiến</strong> là trò chơi trí tuệ đỉnh cao, lựa chọn của bạn quyết định vận mệnh của bạn, hãy chơi hết mình để tiến đến đinh cao.</p>
   </section>
 
   <section class="game-container">
-    <div style="height:20px;"></div>
-    <canvas id="canvas" width="1080" height="1920"></canvas>
+  <div style="height:20px;"></div>
+    <canvas id="canvas" width=1080 height=1920></canvas>
     <div style="height:10px;"></div>
-    <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình</button>
+    <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
     <div style="height:10px;"></div>
   </section>
 
@@ -98,15 +98,11 @@
   <section class="section">
     <h2>📜 Hướng dẫn chơi</h2>
     <ul>
-      <li>🔹 Ghép các viên ngọc cùng màu để tạo combo và tung chiêu đặc biệt.</li>
-      <li>🔹 Mỗi nguyên tố có kỹ năng riêng — kết hợp chiến thuật để vượt qua các trận đấu khó.</li>
-      <li>🔹 Thu thập anh hùng mới, nâng cấp sức mạnh và mở khóa kỹ năng tối thượng.</li>
-      <li>🔹 Sử dụng vật phẩm hỗ trợ thông minh để giành chiến thắng nhanh hơn.</li>
-      <li>🔹 Đừng quên hoàn thành nhiệm vụ ngày để nhận thưởng hấp dẫn!</li>
+      <li>ghép các item với nhau để đạt được giá trị tương ứng.</li>
+      <li>Game match-3 huyền thoại.</li>
     </ul>
   </section>
 </main>
-
 
 <footer>
   &copy; 2025 HN Game. Tất cả bản quyền được bảo lưu.
