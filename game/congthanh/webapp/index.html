@@ -162,8 +162,10 @@ function resizeCanvas() {
       console.log("desktop full width",Math.floor(window.innerWidth * dpr))
       console.log("desktop full height",Math.floor(window.innerHeight * dpr))
       // Canvas thực (pixel vật lý)
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
+      // canvas.width = Math.floor(window.innerWidth * dpr);
+      // canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.width = LOGICAL_WIDTH;
+      canvas.height = LOGICAL_HEIGHT;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
