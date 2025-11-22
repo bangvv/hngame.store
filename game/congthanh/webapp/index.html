@@ -17,10 +17,6 @@
 <meta name="twitter:description" content="Chơi game Công Thành Chiến hoàn toàn miễn phí, vui nhộn và hấp dẫn.">
 <meta name="twitter:image" content="../image/congthanh.png">
 
-<link rel="icon" type="image/png" href="../../../image/iconWebHNG.png">
-<link rel="apple-touch-icon" href="../../../image/iconWebHNG.png">
-<meta name="theme-color" content="#0f172a">
-
 <style>
   html, body {background: #0f172a;color: #e2e8f0;font-family: 'Arial', sans-serif;margin: 0;padding: 0;}
   header {text-align: center;padding: 20px;background: #1e293b;color: #fff;}
@@ -33,21 +29,25 @@
   .section {background: #1e293b;border-radius: 10px;padding: 20px;margin-bottom: 20px;}
   .section h2 {color: #60a5fa;margin-top: 0;}
   .game-container {display: flex;flex-direction: column;justify-content: center;background: #1e293b;border-radius: 12px;text-align: center;}
-  .download-section {background: linear-gradient(135deg, #0f172a, #1e293b);border-radius: 14px;padding: 25px 30px;margin-bottom: 30px;box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);}
-  .download-container {display: flex;align-items: center;justify-content: space-between;gap: 20px;flex-wrap: wrap;}
-  .download-text h2 {color: #60a5fa;margin: 0;font-size: 26px;}
-  .download-text p {color: #cbd5e1;font-size: 16px;margin-top: 6px;}
-  .download-button {width: 175px;height: 50px;background: none;border: none;cursor: pointer;transition: transform 0.25s ease, box-shadow 0.25s ease;border-radius: 12px;}
-  .download-button:hover {transform: scale(1.05);box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);}
-  .download-icon {width: 175px;height: 50px;object-fit: contain;}
-  canvas#canvas {display: block;background: #000;border: 2px solid #334155;border-radius: 10px;width: 486px;  /* 9:16 */height: 864px;margin: 0 auto;}
+  
+  canvas#canvas {
+    display: block;
+    background: #000;
+    border: 2px solid #334155;
+    border-radius: 10px;
+    width: 486px;  /* 9:16 */
+    height: 864px;
+    margin: 0 auto;
+  }
   @media (max-width: 768px) { 
     .game-container {width: 100%;display: flex;flex-direction: column;align-items: center;justify-content: center;}
-    canvas#canvas {width: 90%;height: calc(90% * 16 / 9);border: 2px solid #334155;border-radius: 10px;background: #000;}
-    .download-container {flex-direction: column;align-items: center;text-align: center;}
-    .download-text h2 {font-size: 22px;}
-    .download-button {width: 220px;height: 65px;}
-    .download-icon {width: 220px;height: 65px;}
+    canvas#canvas {
+      width: 90%;
+      height: calc(90% * 16 / 9);
+      border: 2px solid #334155;
+      border-radius: 10px;
+      background: #000;
+    }
   }
   footer {text-align: center;padding: 20px;background: #1e293b;color: #94a3b8;font-size: 14px;}
   * {box-sizing: border-box;max-width: 100vw;}
@@ -70,20 +70,6 @@
 </nav>
 
 <main>
-  <section class="download-section">
-    <div class="download-container">
-      <div class="download-text">
-        <h2>🚀 Tải game ngay</h2>
-        <p>Trải nghiệm miễn phí trên Android – bắt đầu hành trình chinh phục của bạn!</p>
-      </div>
-
-      <button class="download-button"
-        onclick="window.open('https://play.google.com/store/apps/details?id=com.hngame.congthanh', '_blank')">
-        <img src="../../../image/icon_button_download.png" alt="Tải game Android" class="download-icon" />
-      </button>
-    </div>
-  </section>
-
   <section class="section">
     <h2>🎮 Giới thiệu game</h2>
     <p><strong>Công Thành Chiến</strong> là trò chơi trí tuệ đỉnh cao, lựa chọn của bạn quyết định vận mệnh của bạn, hãy chơi hết mình để tiến đến đinh cao.</p>
@@ -120,19 +106,19 @@ const fullBtn = document.getElementById("fullscreen-btn");
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
 
+const scale = Math.ceil(window.innerHeight / 1080)+1;
+
+
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 }
 
-// === Resize canvas hiển thị ===
 function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
   const dpr = window.devicePixelRatio || 1;
-  
   if (full) {
     if (isMobile()) {
-      // Giữ đúng tỷ lệ 9:16
       const screenRatio = window.innerWidth / window.innerHeight;
       const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
       let w, h;
@@ -144,22 +130,17 @@ function resizeCanvas() {
         w = window.innerWidth;
         h = w / targetRatio;
       }
-
-      // Canvas hiển thị
       canvas.style.width = w + "px";
       canvas.style.height = h + "px";
-
-      // Canvas thực (pixel vật lý)
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
-
       canvas.style.margin = "auto";
       canvas.style.display = "block";
     } else {
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
-      canvas.width = LOGICAL_WIDTH;
-      canvas.height = LOGICAL_HEIGHT;
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
+      canvas.width = window.innerWidth*scale;
+      canvas.height = window.innerHeight*scale;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
@@ -185,7 +166,6 @@ function resizeCanvas() {
   }
 }
 
-
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = LOGICAL_WIDTH / rect.width;
@@ -205,6 +185,7 @@ function getCanvasCoords(evt) {
     y: (clientY - rect.top) * scaleY,
   };
 }
+
 
 ["mousedown", "touchstart"].forEach(ev =>
   canvas.addEventListener(ev, e => {
@@ -226,7 +207,6 @@ canvas.addEventListener("touchmove", e => {
   if (typeof gameTouchMove === "function") gameTouchMove(p.x, p.y);
 });
 
-// === Fullscreen toggle ===
 fullBtn.addEventListener("click", async () => {
   try {
     if (canvas.requestFullscreen) await canvas.requestFullscreen();
@@ -237,12 +217,10 @@ fullBtn.addEventListener("click", async () => {
   }
 });
 
-// === Event thay đổi kích thước / xoay / fullscreen ===
 ["resize", "orientationchange", "fullscreenchange"].forEach(ev =>
   window.addEventListener(ev, () => setTimeout(resizeCanvas, 200))
 );
 
-// === Khởi động TeaVM game ===
 function start() {
   resizeCanvas();
   if (typeof main === "function") main();
