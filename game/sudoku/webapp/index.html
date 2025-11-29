@@ -128,8 +128,8 @@ function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
   const dpr = window.devicePixelRatio || 1;
+  const { wi, he } = getFullscreenCanvasSize(1080, 1920);
   if (full) {
-  	const { wi, he } = getFullscreenCanvasSize(1080, 1920);
     if (isMobile()) {
       const screenRatio = window.innerWidth / window.innerHeight;
       const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
@@ -142,8 +142,8 @@ function resizeCanvas() {
         w = window.innerWidth;
         h = w / targetRatio;
       }
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
+      canvas.style.width = wi;
+      canvas.style.height = he;
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
       canvas.style.margin = "auto";
@@ -167,8 +167,10 @@ function resizeCanvas() {
 	  canvas.style.width = "90%";
 	  canvas.style.height = "calc(90% * 16 / 9)";
 	} else {
-	  canvas.style.width = "486px";
-	  canvas.style.height = "864px";
+	  // canvas.style.width = "486px";
+	  // canvas.style.height = "864px";
+	  canvas.style.width = wi;
+      canvas.style.height = he;
 	}
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
