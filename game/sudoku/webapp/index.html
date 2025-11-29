@@ -152,8 +152,10 @@ function resizeCanvas() {
       canvas.style.margin = "auto";
       canvas.style.display = "block";
     } else {
-      canvas.style.width = wi;
-      canvas.style.height = he;
+		console.log("wi:",wi)
+		console.log("he:",he)
+      canvas.style.width = wi + "px";
+      canvas.style.height = he + "px";
 		canvas.width = LOGICAL_WIDTH;
 		canvas.height = LOGICAL_HEIGHT;
     }
