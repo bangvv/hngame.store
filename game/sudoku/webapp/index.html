@@ -129,6 +129,7 @@ function resizeCanvas() {
   const mobile = isMobile();
   const dpr = window.devicePixelRatio || 1;
   if (full) {
+	const { width: wi, height: he } = getFullscreenCanvasSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
     if (isMobile()) {
       const screenRatio = window.innerWidth / window.innerHeight;
       const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
@@ -148,10 +149,10 @@ function resizeCanvas() {
       canvas.style.margin = "auto";
       canvas.style.display = "block";
     } else {
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
-      canvas.width = window.innerWidth*scale;
-      canvas.height = window.innerHeight*scale;
+      canvas.style.width = wi;
+      canvas.style.height = hi;
+		canvas.width = LOGICAL_WIDTH;
+		canvas.height = LOGICAL_HEIGHT;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
@@ -175,6 +176,28 @@ function resizeCanvas() {
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
   }
+}
+
+function getFullscreenCanvasSize(logicalWidth, logicalHeight) {
+  const screenW = window.innerWidth;
+  const screenH = window.innerHeight;
+
+  const targetRatio = logicalWidth / logicalHeight;
+  const screenRatio = screenW / screenH;
+
+  let width, height;
+
+  if (screenRatio > targetRatio) {
+    // Màn hình rộng hơn → giới hạn theo chiều cao
+    height = screenH;
+    width = logicalWidth * (height / logicalHeight);
+  } else {
+    // Màn hình cao hơn → giới hạn theo chiều rộng
+    width = screenW;
+    height = logicalHeight * (width / logicalWidth);
+  }
+
+  return { width, height };
 }
 
 function getCanvasCoords(evt) {

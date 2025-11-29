@@ -178,6 +178,28 @@ function resizeCanvas() {
   }
 }
 
+function getFullscreenCanvasSize(logicalWidth, logicalHeight) {
+  const screenW = window.innerWidth;
+  const screenH = window.innerHeight;
+
+  const targetRatio = logicalWidth / logicalHeight;
+  const screenRatio = screenW / screenH;
+
+  let width, height;
+
+  if (screenRatio > targetRatio) {
+    // Màn hình rộng hơn → giới hạn theo chiều cao
+    height = screenH;
+    width = logicalWidth * (height / logicalHeight);
+  } else {
+    // Màn hình cao hơn → giới hạn theo chiều rộng
+    width = screenW;
+    height = logicalHeight * (width / logicalWidth);
+  }
+
+  return { width, height };
+}
+
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = LOGICAL_WIDTH / rect.width;
