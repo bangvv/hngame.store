@@ -112,43 +112,11 @@ footer {text-align: center;padding: 20px;background: #1e293b;color: #94a3b8;font
 
 <script>
 const canvas = document.getElementById("canvas");
-const wrapper = document.getElementById("canvas-wrapper");
 const fullBtn = document.getElementById("fullscreen-btn");
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
 
 const scale = Math.ceil(window.innerHeight / 1080)+1;
-
-
-function isMobile() {
-  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
-}
-
-function resizeCanvas() {
-  const full = !!document.fullscreenElement;
-  const dpr = window.devicePixelRatio || 1;
-  const { width: wi, height: he } = getFullscreenCanvasSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
-
-  canvas.width = LOGICAL_WIDTH;
-  canvas.height = LOGICAL_HEIGHT;
-  canvas.style.width = wi + "px";
-  canvas.style.height = he + "px";
-  canvas.style.position = "absolute";
-  canvas.style.left = (window.innerWidth - wi)/2 + "px";
-  canvas.style.top = (window.innerHeight - he)/2 + "px";
-
-  // body overflow
-  if(full){
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-  } else {
-    document.body.style.position = "";
-    document.documentElement.style.overflow = "auto";
-    document.body.style.overflow = "auto";
-  }
-}
-
 
 function getFullscreenCanvasSize(logicalWidth, logicalHeight) {
   const screenW = window.innerWidth;
@@ -170,6 +138,64 @@ function getFullscreenCanvasSize(logicalWidth, logicalHeight) {
   }
 
   return { width, height };
+}
+
+function isMobile() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+}
+
+function resizeCanvas() {
+  const full = !!document.fullscreenElement;
+  const mobile = isMobile();
+  const dpr = window.devicePixelRatio || 1;
+  if (full) {
+	const { width: wi, height: he } = getFullscreenCanvasSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    if (isMobile()) {
+      const screenRatio = window.innerWidth / window.innerHeight;
+      const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+      let w, h;
+
+      if (screenRatio > targetRatio) {
+        h = window.innerHeight;
+        w = h * targetRatio;
+      } else {
+        w = window.innerWidth;
+        h = w / targetRatio;
+      }
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.margin = "auto";
+      canvas.style.display = "block";
+    } else {
+      canvas.style.width = wi;
+      canvas.style.height = he;
+      canvas.width = window.innerWidth*scale;
+      canvas.height = window.innerHeight*scale;
+    }
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+  } else {
+    document.body.style.position = "";
+    document.body.style.width = "";
+    canvas.width = LOGICAL_WIDTH;
+    canvas.height = LOGICAL_HEIGHT;
+    
+        if (mobile) {
+          canvas.style.width = "90%";
+          canvas.style.height = "calc(90% * 16 / 9)";
+        } else {
+          canvas.style.width = "486px";
+          canvas.style.height = "864px";
+        }
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+    document.documentElement.style.overflowY = "auto";
+    document.body.style.overflowY = "auto";
+  }
 }
 
 function getCanvasCoords(evt) {
@@ -215,17 +241,17 @@ canvas.addEventListener("touchmove", e => {
 
 fullBtn.addEventListener("click", async () => {
   try {
-    if (wrapper.requestFullscreen) await wrapper.requestFullscreen();
-    else if (wrapper.webkitRequestFullscreen) await wrapper.webkitRequestFullscreen();
-  } catch(e) {
+    if (canvas.requestFullscreen) await canvas.requestFullscreen();
+    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
+    setTimeout(resizeCanvas, 200);
+  } catch (e) {
     console.error("Fullscreen error:", e);
   }
 });
 
-// Resize khi fullscreen hoặc window thay đổi
-document.addEventListener("fullscreenchange", resizeCanvas);
-window.addEventListener("resize", resizeCanvas);
-window.addEventListener("orientationchange", resizeCanvas);
+["resize", "orientationchange", "fullscreenchange"].forEach(ev =>
+  window.addEventListener(ev, () => setTimeout(resizeCanvas, 200))
+);
 
 function start() {
   resizeCanvas();
