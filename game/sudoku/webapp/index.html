@@ -89,9 +89,9 @@
 
   <section class="game-container">
   <div style="height:20px;"></div>
-	  <div id="canvas-wrapper" style="background:#000;">
-		<canvas id="canvas" width="1080" height="1920"></canvas>
-	  </div>
+	<div id="canvas-wrapper" style="background:#1e293b;">
+	  <canvas id="canvas" width=1080 height=1920></canvas>
+	</div>
     <div style="height:10px;"></div>
     <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
     <div style="height:10px;"></div>
@@ -132,7 +132,7 @@ function resizeCanvas() {
   const mobile = isMobile();
   const dpr = window.devicePixelRatio || 1;
   if (full) {
-	const { width: wi, height: he } = getFullscreenCanvasSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    const { width: wi, height: he } = getFullscreenCanvasSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
     if (isMobile()) {
       const screenRatio = window.innerWidth / window.innerHeight;
       const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
@@ -145,19 +145,17 @@ function resizeCanvas() {
         w = window.innerWidth;
         h = w / targetRatio;
       }
-
       canvas.style.width = wi + "px";
       canvas.style.height = he + "px";
-		canvas.width = LOGICAL_WIDTH;
-		canvas.height = LOGICAL_HEIGHT;
+	  canvas.width = LOGICAL_WIDTH;
+	  canvas.height = LOGICAL_HEIGHT;
       canvas.style.margin = "auto";
       canvas.style.display = "block";
     } else {
-
       canvas.style.width = wi + "px";
       canvas.style.height = he + "px";
-		canvas.width = LOGICAL_WIDTH;
-		canvas.height = LOGICAL_HEIGHT;
+	  canvas.width = LOGICAL_WIDTH;
+	  canvas.height = LOGICAL_HEIGHT;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
@@ -248,8 +246,8 @@ canvas.addEventListener("touchmove", e => {
 
 fullBtn.addEventListener("click", async () => {
   try {
-    if (wrapper.requestFullscreen) await wrapper.requestFullscreen();
-    else if (wrapper.webkitRequestFullscreen) await wrapper.webkitRequestFullscreen();
+    if (canvas.requestFullscreen) await canvas.requestFullscreen();
+    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
     setTimeout(resizeCanvas, 200);
   } catch (e) {
     console.error("Fullscreen error:", e);

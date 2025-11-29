@@ -89,7 +89,9 @@
 
   <section class="game-container">
   <div style="height:20px;"></div>
-    <canvas id="canvas" width=1080 height=1920></canvas>
+	<div id="canvas-wrapper" style="background:#1e293b;">
+	  <canvas id="canvas" width=1080 height=1920></canvas>
+	</div>
     <div style="height:10px;"></div>
     <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
     <div style="height:10px;"></div>
@@ -113,6 +115,7 @@
 
 <script>
 const canvas = document.getElementById("canvas");
+const wrapper = document.getElementById("canvas-wrapper");
 const fullBtn = document.getElementById("fullscreen-btn");
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
@@ -129,6 +132,7 @@ function resizeCanvas() {
   const mobile = isMobile();
   const dpr = window.devicePixelRatio || 1;
   if (full) {
+    const { width: wi, height: he } = getFullscreenCanvasSize(LOGICAL_WIDTH, LOGICAL_HEIGHT);
     if (isMobile()) {
       const screenRatio = window.innerWidth / window.innerHeight;
       const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
@@ -141,17 +145,17 @@ function resizeCanvas() {
         w = window.innerWidth;
         h = w / targetRatio;
       }
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = wi + "px";
+      canvas.style.height = he + "px";
+	  canvas.width = LOGICAL_WIDTH;
+	  canvas.height = LOGICAL_HEIGHT;
       canvas.style.margin = "auto";
       canvas.style.display = "block";
     } else {
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
-      canvas.width = window.innerWidth*scale;
-      canvas.height = window.innerHeight*scale;
+      canvas.style.width = wi + "px";
+      canvas.style.height = he + "px";
+	  canvas.width = LOGICAL_WIDTH;
+	  canvas.height = LOGICAL_HEIGHT;
     }
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
@@ -175,6 +179,28 @@ function resizeCanvas() {
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
   }
+}
+
+function getFullscreenCanvasSize(logicalWidth, logicalHeight) {
+  const screenW = window.innerWidth;
+  const screenH = window.innerHeight;
+
+  const targetRatio = logicalWidth / logicalHeight;
+  const screenRatio = screenW / screenH;
+
+  let width, height;
+
+  if (screenRatio > targetRatio) {
+    // Màn hình rộng hơn → giới hạn theo chiều cao
+    height = screenH;
+    width = logicalWidth * (height / logicalHeight);
+  } else {
+    // Màn hình cao hơn → giới hạn theo chiều rộng
+    width = screenW;
+    height = logicalHeight * (width / logicalWidth);
+  }
+
+  return { width, height };
 }
 
 function getCanvasCoords(evt) {
