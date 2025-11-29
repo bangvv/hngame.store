@@ -145,15 +145,15 @@ function resizeCanvas() {
         w = window.innerWidth;
         h = w / targetRatio;
       }
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
+
+      canvas.style.width = wi + "px";
+      canvas.style.height = he + "px";
+		canvas.width = LOGICAL_WIDTH;
+		canvas.height = LOGICAL_HEIGHT;
       canvas.style.margin = "auto";
       canvas.style.display = "block";
     } else {
-		console.log("wi:",wi)
-		console.log("he:",he)
+
       canvas.style.width = wi + "px";
       canvas.style.height = he + "px";
 		canvas.width = LOGICAL_WIDTH;
