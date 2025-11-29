@@ -124,70 +124,68 @@ function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 }
 
+const LOGICAL_WIDTH = 1080;
+const LOGICAL_HEIGHT = 1920;
+
+function isMobile() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
+
 function resizeCanvas() {
-  const full = !!document.fullscreenElement;
-  const mobile = isMobile();
-  const dpr = window.devicePixelRatio || 1;
-if (full) {
-        // Cố định độ phân giải nội tại
+    const full = !!document.fullscreenElement;
+    const dpr = window.devicePixelRatio || 1;
+
+    let canvasW, canvasH;
+
+    if (full) {
+        const screenW = window.innerWidth;
+        const screenH = window.innerHeight;
+        const screenRatio = screenW / screenH;
+        const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+
+        if (screenRatio > targetRatio) {
+            // Màn hình quá rộng → canvas cao bằng màn hình
+            canvasH = screenH * 0.9; // 90% chiều cao
+            canvasW = canvasH * targetRatio;
+        } else {
+            // Màn hình quá cao → canvas rộng bằng màn hình
+            canvasW = screenW * 0.9; // 90% chiều rộng
+            canvasH = canvasW / targetRatio;
+        }
+
+        // Gán style canvas và canh giữa
+        canvas.style.width = canvasW + "px";
+        canvas.style.height = canvasH + "px";
+        canvas.style.margin = "auto";
+        canvas.style.display = "block";
+
+        // Gán độ phân giải vật lý cho canvas
+        canvas.width = Math.floor(LOGICAL_WIDTH * dpr);
+        canvas.height = Math.floor(LOGICAL_HEIGHT * dpr);
+
+        // Ẩn overflow và cố định body
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+        document.body.style.position = "fixed";
+        document.body.style.width = "100%";
+    } else {
+        // Chế độ bình thường (không fullscreen)
         canvas.width = LOGICAL_WIDTH;
         canvas.height = LOGICAL_HEIGHT;
-
-        // Lấy kích thước cửa sổ/màn hình hiện tại
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        
-        const screenRatio = windowWidth / windowHeight;
-        const gameRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT; // 1080/1920
-
-        let newCssWidth, newCssHeight;
-
-        // Tính toán để giữ tỷ lệ (Letterboxing)
-        if (screenRatio > gameRatio) {
-            // Màn hình bè hơn game (thừa không gian ngang)
-            newCssHeight = windowHeight;
-            newCssWidth = newCssHeight * gameRatio;
+        if (isMobile()) {
+            canvas.style.width = "90%";
+            canvas.style.height = "calc(90% * 16 / 9)";
         } else {
-            // Màn hình dài hơn game (thừa không gian dọc)
-            newCssWidth = windowWidth;
-            newCssHeight = newCssWidth / gameRatio;
+            canvas.style.width = "486px";
+            canvas.style.height = "864px";
         }
-
-        // Áp dụng kích thước hiển thị (CSS) và căn giữa
-        canvas.style.width = newCssWidth + "px";
-        canvas.style.height = newCssHeight + "px";
-        
-        canvas.style.position = "absolute";
-        canvas.style.top = "50%";
-        canvas.style.left = "50%";
-        canvas.style.transform = "translate(-50%, -50%)";
-        canvas.style.margin = "0";
-        canvas.style.border = "none";
-        
-        // Khóa cuộn và đặt nền đen
-        document.body.style.overflow = "hidden";
-        document.body.style.backgroundColor = "#000"; 
-        document.documentElement.style.overflow = "hidden";
-        
-  } else {
-    document.body.style.position = "";
-    document.body.style.width = "";
-    canvas.width = LOGICAL_WIDTH;
-    canvas.height = LOGICAL_HEIGHT;
-    
-        if (mobile) {
-          canvas.style.width = "90%";
-          canvas.style.height = "calc(90% * 16 / 9)";
-        } else {
-          canvas.style.width = "486px";
-          canvas.style.height = "864px";
-        }
-    document.documentElement.style.overflowX = "hidden";
-    document.body.style.overflowX = "hidden";
-    document.documentElement.style.overflowY = "auto";
-    document.body.style.overflowY = "auto";
-  }
+        document.documentElement.style.overflow = "auto";
+        document.body.style.overflow = "auto";
+        document.body.style.position = "";
+        document.body.style.width = "";
+    }
 }
+
 
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
