@@ -246,8 +246,8 @@ canvas.addEventListener("touchmove", e => {
 
 fullBtn.addEventListener("click", async () => {
   try {
-    if (canvas.requestFullscreen) await canvas.requestFullscreen();
-    else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
+    if (wrapper.requestFullscreen) await wrapper.requestFullscreen();
+    else if (wrapper.webkitRequestFullscreen) await wrapper.webkitRequestFullscreen();
     setTimeout(resizeCanvas, 200);
   } catch (e) {
     console.error("Fullscreen error:", e);
