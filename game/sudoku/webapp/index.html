@@ -229,15 +229,16 @@ fullBtn.addEventListener("click", async () => {
   try {
     if (canvas.requestFullscreen) await canvas.requestFullscreen();
     else if (canvas.webkitRequestFullscreen) await canvas.webkitRequestFullscreen();
-    setTimeout(resizeCanvas, 200);
   } catch (e) {
     console.error("Fullscreen error:", e);
   }
 });
 
-["resize", "orientationchange", "fullscreenchange"].forEach(ev =>
+["resize", "orientationchange"].forEach(ev =>
   window.addEventListener(ev, () => setTimeout(resizeCanvas, 200))
 );
+
+document.addEventListener("fullscreenchange", resizeCanvas);
 
 function start() {
   resizeCanvas();
