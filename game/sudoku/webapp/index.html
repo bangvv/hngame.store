@@ -119,16 +119,8 @@ const LOGICAL_HEIGHT = 1920;
 
 const scale = Math.ceil(window.innerHeight / 1080)+1;
 
-
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
-}
-
-const LOGICAL_WIDTH = 1080;
-const LOGICAL_HEIGHT = 1920;
-
-function isMobile() {
-    return /Mobi|Android/i.test(navigator.userAgent);
 }
 
 function resizeCanvas() {
@@ -160,8 +152,8 @@ function resizeCanvas() {
         canvas.style.display = "block";
 
         // Gán độ phân giải vật lý cho canvas
-        canvas.width = Math.floor(LOGICAL_WIDTH * dpr);
-        canvas.height = Math.floor(LOGICAL_HEIGHT * dpr);
+        canvas.width = LOGICAL_WIDTH;
+        canvas.height = LOGICAL_HEIGHT;
 
         // Ẩn overflow và cố định body
         document.documentElement.style.overflow = "hidden";
