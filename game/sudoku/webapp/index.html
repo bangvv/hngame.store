@@ -128,36 +128,48 @@ function resizeCanvas() {
   const full = !!document.fullscreenElement;
   const mobile = isMobile();
   const dpr = window.devicePixelRatio || 1;
-  if (full) {
-    if (isMobile()) {
-      const screenRatio = window.innerWidth / window.innerHeight;
-      const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
-      let w, h;
+if (full) {
+        // Cố định độ phân giải nội tại
+        canvas.width = LOGICAL_WIDTH;
+        canvas.height = LOGICAL_HEIGHT;
 
-      if (screenRatio > targetRatio) {
-        h = window.innerHeight;
-        w = h * targetRatio;
-      } else {
-        w = window.innerWidth;
-        h = w / targetRatio;
-      }
-      canvas.style.width = w + "px";
-      canvas.style.height = h + "px";
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.margin = "auto";
-      canvas.style.display = "block";
-    } else {
-      canvas.style.width = "100vw";
-      canvas.style.height = "100vh";
-      canvas.width = window.innerWidth*scale;
-      canvas.height = window.innerHeight*scale;
-    }
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-    document.body.style.width = "100%";
-  } else {
+        // Lấy kích thước cửa sổ/màn hình hiện tại
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        
+        const screenRatio = windowWidth / windowHeight;
+        const gameRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT; // 1080/1920
+
+        let newCssWidth, newCssHeight;
+
+        // Tính toán để giữ tỷ lệ (Letterboxing)
+        if (screenRatio > gameRatio) {
+            // Màn hình bè hơn game (thừa không gian ngang)
+            newCssHeight = windowHeight;
+            newCssWidth = newCssHeight * gameRatio;
+        } else {
+            // Màn hình dài hơn game (thừa không gian dọc)
+            newCssWidth = windowWidth;
+            newCssHeight = newCssWidth / gameRatio;
+        }
+
+        // Áp dụng kích thước hiển thị (CSS) và căn giữa
+        canvas.style.width = newCssWidth + "px";
+        canvas.style.height = newCssHeight + "px";
+        
+        canvas.style.position = "absolute";
+        canvas.style.top = "50%";
+        canvas.style.left = "50%";
+        canvas.style.transform = "translate(-50%, -50%)";
+        canvas.style.margin = "0";
+        canvas.style.border = "none";
+        
+        // Khóa cuộn và đặt nền đen
+        document.body.style.overflow = "hidden";
+        document.body.style.backgroundColor = "#000"; 
+        document.documentElement.style.overflow = "hidden";
+        
+  } else {
     document.body.style.position = "";
     document.body.style.width = "";
     canvas.width = LOGICAL_WIDTH;
