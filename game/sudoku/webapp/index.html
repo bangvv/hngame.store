@@ -86,7 +86,7 @@ footer {text-align: center;padding: 20px;background: #1e293b;color: #94a3b8;font
   </section>
 
   <section class="game-container">
-    <div id="canvas-wrapper" style="position:relative; display:flex; justify-content:center; align-items:center; background:#000;">
+    <div id="canvas-wrapper" style="position:relative; display:flex; justify-content:center;width: 486px; height: 864px; align-items:center; background:#1e293b;">
       <canvas id="canvas" width="1080" height="1920"></canvas>
     </div>
     <div style="height:10px;"></div>
@@ -163,14 +163,13 @@ function resizeCanvas() {
     document.body.style.width = "";
     canvas.width = LOGICAL_WIDTH;
     canvas.height = LOGICAL_HEIGHT;
-    
-        if (mobile) {
-          canvas.style.width = "90%";
-          canvas.style.height = "calc(90% * 16 / 9)";
-        } else {
-          canvas.style.width = "486px";
-          canvas.style.height = "864px";
-        }
+	if (mobile) {
+	  canvas.style.width = "90%";
+	  canvas.style.height = "calc(90% * 16 / 9)";
+	} else {
+	  canvas.style.width = "486px";
+	  canvas.style.height = "864px";
+	}
     document.documentElement.style.overflowX = "hidden";
     document.body.style.overflowX = "hidden";
     document.documentElement.style.overflowY = "auto";
