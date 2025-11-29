@@ -89,7 +89,9 @@
 
   <section class="game-container">
   <div style="height:20px;"></div>
-    <canvas id="canvas" width=1080 height=1920></canvas>
+	  <div id="canvas-wrapper" style="position:relative; display:flex; justify-content:center; align-items:center; background:#000;">
+		<canvas id="canvas" width="1080" height="1920"></canvas>
+	  </div>
     <div style="height:10px;"></div>
     <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
     <div style="height:10px;"></div>
@@ -113,6 +115,7 @@
 
 <script>
 const canvas = document.getElementById("canvas");
+const wrapper = document.getElementById("canvas-wrapper");
 const fullBtn = document.getElementById("fullscreen-btn");
 const LOGICAL_WIDTH = 1080;
 const LOGICAL_HEIGHT = 1920;
