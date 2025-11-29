@@ -127,7 +127,7 @@ function isMobile() {
 function resizeCanvas() {
     const full = !!document.fullscreenElement;
     const dpr = window.devicePixelRatio || 1;
-
+	const mobile = isMobile();
     let canvasW, canvasH;
 
     if (full) {
