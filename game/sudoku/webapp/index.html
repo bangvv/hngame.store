@@ -89,7 +89,7 @@
 
   <section class="game-container">
   <div style="height:20px;"></div>
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" width=1080 height=1920></canvas>
     <div style="height:10px;"></div>
     <button id="fullscreen-btn" class="fullscreen-button">🖥️ Full màn hình.</button>
     <div style="height:10px;"></div>
@@ -125,63 +125,56 @@ function isMobile() {
 }
 
 function resizeCanvas() {
-    const full = !!document.fullscreenElement;
-    const dpr = window.devicePixelRatio || 1;
-	const mobile = isMobile();
-    let canvasW, canvasH;
+  const full = !!document.fullscreenElement;
+  const mobile = isMobile();
+  const dpr = window.devicePixelRatio || 1;
+  if (full) {
+    if (isMobile()) {
+      const screenRatio = window.innerWidth / window.innerHeight;
+      const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
+      let w, h;
 
-    if (full) {
-        const screenW = window.innerWidth;
-        const screenH = window.innerHeight;
-        const screenRatio = screenW / screenH;
-        const targetRatio = LOGICAL_WIDTH / LOGICAL_HEIGHT;
-
-        if (screenRatio > targetRatio) {
-            // Màn hình quá rộng → canvas cao bằng màn hình
-            canvasH = screenH * 0.9; // 90% chiều cao
-            canvasW = canvasH * targetRatio;
-        } else {
-            // Màn hình quá cao → canvas rộng bằng màn hình
-            canvasW = screenW * 0.9; // 90% chiều rộng
-            canvasH = canvasW / targetRatio;
-        }
-
-        // Gán style canvas và canh giữa
-		console.log("canvasW:",canvasW)
-		console.log("canvasH:",canvasH)
-		
-        canvas.style.width = canvasW + "px";
-        canvas.style.height = canvasH + "px";
-        canvas.style.margin = "auto";
-        canvas.style.display = "block";
-
-        // Gán độ phân giải vật lý cho canvas
-        canvas.width = LOGICAL_WIDTH;
-        canvas.height = LOGICAL_HEIGHT;
-
-        // Ẩn overflow và cố định body
-        document.documentElement.style.overflow = "hidden";
-        document.body.style.overflow = "hidden";
-        document.body.style.position = "fixed";
-        document.body.style.width = "100%";
+      if (screenRatio > targetRatio) {
+        h = window.innerHeight;
+        w = h * targetRatio;
+      } else {
+        w = window.innerWidth;
+        h = w / targetRatio;
+      }
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.margin = "auto";
+      canvas.style.display = "block";
     } else {
-		document.body.style.position = "";
-		document.body.style.width = "";
-		canvas.width = LOGICAL_WIDTH;
-		canvas.height = LOGICAL_HEIGHT;
-		
-			if (mobile) {
-			  canvas.style.width = "90%";
-			  canvas.style.height = "calc(90% * 16 / 9)";
-			} else {
-			  canvas.style.width = "486px";
-			  canvas.style.height = "864px";
-			}
-		document.documentElement.style.overflowX = "hidden";
-		document.body.style.overflowX = "hidden";
-		document.documentElement.style.overflowY = "auto";
-		document.body.style.overflowY = "auto";
+      canvas.style.width = "100vw";
+      canvas.style.height = "100vh";
+      canvas.width = window.innerWidth*scale;
+      canvas.height = window.innerHeight*scale;
     }
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+  } else {
+    document.body.style.position = "";
+    document.body.style.width = "";
+    canvas.width = LOGICAL_WIDTH;
+    canvas.height = LOGICAL_HEIGHT;
+    
+        if (mobile) {
+          canvas.style.width = "90%";
+          canvas.style.height = "calc(90% * 16 / 9)";
+        } else {
+          canvas.style.width = "486px";
+          canvas.style.height = "864px";
+        }
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+    document.documentElement.style.overflowY = "auto";
+    document.body.style.overflowY = "auto";
+  }
 }
 
 function getCanvasCoords(evt) {
