@@ -119,6 +119,7 @@ const LOGICAL_HEIGHT = 1920;
 
 const scale = Math.ceil(window.innerHeight / 1080)+1;
 
+
 function isMobile() {
   return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 }
@@ -161,25 +162,24 @@ function resizeCanvas() {
         document.body.style.position = "fixed";
         document.body.style.width = "100%";
     } else {
-        // Chế độ bình thường (không fullscreen)
 		document.body.style.position = "";
 		document.body.style.width = "";
 		canvas.width = LOGICAL_WIDTH;
 		canvas.height = LOGICAL_HEIGHT;
-		if (mobile) {
-		  canvas.style.width = "90%";
-		  canvas.style.height = "calc(90% * 16 / 9)";
-		} else {
-		  canvas.style.width = "486px";
-		  canvas.style.height = "864px";
-		}
+		
+			if (mobile) {
+			  canvas.style.width = "90%";
+			  canvas.style.height = "calc(90% * 16 / 9)";
+			} else {
+			  canvas.style.width = "486px";
+			  canvas.style.height = "864px";
+			}
 		document.documentElement.style.overflowX = "hidden";
 		document.body.style.overflowX = "hidden";
 		document.documentElement.style.overflowY = "auto";
 		document.body.style.overflowY = "auto";
     }
 }
-
 
 function getCanvasCoords(evt) {
   const rect = canvas.getBoundingClientRect();
