@@ -1,5 +1,8 @@
 i:b:/.gitkeep:178:1
 i:d:/fonts:0:1
+i:b:/fonts/Baloo2-Medium.ttf:420284:1
+i:b:/fonts/Bangers-Regular.ttf:92468:1
+i:b:/fonts/MouldyCheeseRegular-WyMWG.ttf:112116:1
 i:d:/images:0:1
 i:d:/images/home:0:1
 i:b:/images/home/bg_home.png:44738:1
